@@ -45,9 +45,14 @@ except ImportError:  # pragma: no cover - python-dotenv is optional at runtime.
     load_dotenv = None
 
 
+try:
+    from huggingface_hub import InferenceClient
+except ImportError:
+    InferenceClient = None
+
 GITHUB_API_VERSION = "2022-11-28"
 DEFAULT_OPENAI_MODEL = "gpt-4.1-mini"
-DEFAULT_HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
+DEFAULT_HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 REPAIR_INSTRUCTION = (
     "Modify the provided source code file to resolve the issue described in this "
     "compliance log. Return ONLY the completely updated source code file. Do not "
@@ -300,11 +305,35 @@ def call_huggingface(prompt: str) -> str:
     if not token:
         raise AutoHealerError("HF_TOKEN is required when LLM_PROVIDER=huggingface.")
 
+    model = os.environ.get("HF_MODEL", DEFAULT_HF_MODEL).strip()
     api_url = os.environ.get("HF_API_URL", "").strip()
+
+    # Use InferenceClient if we have no custom api_url and InferenceClient is imported
+    if InferenceClient is not None and not api_url:
+        logger.info("Calling Hugging Face InferenceClient with model: %s", model)
+        client = InferenceClient(token=token)
+        try:
+            response = client.chat_completion(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an expert AI software remediation engineer. Return only a complete, valid replacement file without markdown fence blocks.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=int(os.environ.get("HF_MAX_NEW_TOKENS", "4096")),
+                temperature=0.1,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as exc:
+            logger.warning("InferenceClient chat_completion failed; falling back to direct API. Error: %s", exc)
+
+    # Fallback to direct HTTP post request
     if not api_url:
-        model = os.environ.get("HF_MODEL", DEFAULT_HF_MODEL).strip()
         api_url = f"https://api-inference.huggingface.co/models/{model}"
 
+    logger.info("Calling Hugging Face raw endpoint: %s", api_url)
     response = requests.post(
         api_url,
         headers={

@@ -289,14 +289,47 @@ def build_github_issue_title(report: dict[str, Any]) -> str:
     return f"Compliance Violation: {target_path} - Missing/Incorrect elements"
 
 
+ROUTE_TO_FILE_MAPPING = {
+    "/dashboard/my-applications": "src/components/MyApplications.js",
+    "/dashboard/facilities": "src/components/FacilitiesTable.js",
+    "/dashboard/action-items": "src/components/ActionItemsList.js",
+    "/dashboard/faqs": "src/components/FAQAccordion.js",
+    "/dashboard/user-management": "src/components/UserManagement.js",
+    "/dashboard/announcements": "src/components/Announcements.js",
+    "/dashboard/settings": "src/components/SettingsForm.js",
+    "/dashboard/tickets": "src/components/TicketsTable.js",
+    "/dashboard/contact": "src/components/ContactForm.js",
+}
+
+
 def build_github_issue_body(report: dict[str, Any], run_id: str) -> str:
     findings = report.get("findings", [])
     screenshot = report.get("screenshot_path") or "No screenshot captured"
+    target_path = str(report.get("target_path") or "")
+
+    source_file = "src/components/UnknownComponent.js"
+    for route, filepath in ROUTE_TO_FILE_MAPPING.items():
+        if target_path.rstrip("/") == route.rstrip("/"):
+            source_file = filepath
+            break
+
+    expected_texts = []
+    observed_texts = []
+    for f in findings:
+        expected_texts.append(f.get("expected_behavior", "Not specified"))
+        observed_texts.append(f.get("observed_behavior", "Not specified"))
+
+    expected_combined = " ; ".join(expected_texts) if expected_texts else "None"
+    observed_combined = " ; ".join(observed_texts) if observed_texts else "None"
+
     lines = [
         "## Compliance Discrepancy Report",
         "",
         f"**Run ID:** `{run_id}`",
-        f"**Target Path:** `{report.get('target_path')}`",
+        f"**Target Path:** `{target_path}`",
+        f"Source File: {source_file}",
+        f"Expected: {expected_combined}",
+        f"Observed: {observed_combined}",
         f"**Page URL:** {report.get('page_url') or report.get('target_url')}",
         f"**Screenshot File Reference:** `{screenshot}`",
         "",
