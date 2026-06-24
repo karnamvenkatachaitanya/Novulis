@@ -1,0 +1,28 @@
+# Environment variables and secrets
+.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary scratch and debug files
+scratch_*
+retrieved_context/
+captured_states/
+reports/
+
+# IDE files
+.idea/
+.vscode/
+
+# PDFs (optional - we can keep or ignore them, let's ignore to keep repo small/clean)
+# If the user needs the guidelines in the repository, we could commit it, but generally PDFs are not committed. Let's ignore them to be safe.
+# Actually, the user guideline PDF is ~8MB. It's better not to push large files to GitHub if not required. Let's keep it ignored.
+WaiverPro-User-Guidelines-WITH-DISCREPANCIES.pdf
+Documentation_Compliance_Agent_Assignment.pdf
