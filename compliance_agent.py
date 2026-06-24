@@ -1,3 +1,10 @@
+"""
+Strict LLM judge for WaiverPro documentation compliance.
+
+Uses Hugging Face Serverless Inference API with Qwen/Qwen2.5-7B-Instruct.
+The agent explicitly bypasses LLM execution when scraping failed due to auth redirect.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -7,98 +14,62 @@ import os
 import re
 import sys
 import time
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-try:
-    import torch
-    HAS_TORCH = True
-except ImportError:
-    HAS_TORCH = False
-
-try:
-    from huggingface_hub import InferenceClient
-    HAS_HF_CLIENT = True
-except ImportError:
-    HAS_HF_CLIENT = False
-
-try:
-    from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
-    HAS_TRANSFORMERS = True
-except ImportError:
-    HAS_TRANSFORMERS = False
+from huggingface_hub import InferenceClient
 
 try:
     from dotenv import load_dotenv
-except ImportError:  # pragma: no cover - optional local convenience
+except ImportError:  # pragma: no cover
     load_dotenv = None
 
 
-DEFAULT_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
-DEFAULT_MAX_NEW_TOKENS = 1_800
-DEFAULT_TEMPERATURE = 0.0
-MAX_ELEMENTS_PER_GROUP = 80
-MAX_RULE_CHARS = 12_000
-
+DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+MAX_DOM_CHARS = 18_000
+MAX_GUIDELINE_CHARS = 18_000
+MAX_NEW_TOKENS = 1_200
 
 logger = logging.getLogger("compliance_agent")
 
 
-SYSTEM_PROMPT = """You are a strict compliance judge. You compare a system's documented guidelines against the live user interface state to find violations.
+SYSTEM_PROMPT = """You are a strict WaiverPro documentation compliance judge.
 
-Compare the Documented Rules Context against the Live DOM UI JSON State.
-Identify any compliance discrepancies. For each discrepancy, determine the severity level (High, Medium, or Low).
-You must act as a strict compliance judge and return a machine-readable, schema-valid raw JSON array of discrepancies.
-If the live site complies perfectly and there are no discrepancies, output an empty JSON array `[]`.
-Do not output any introductory text, markdown fences, notes, or explanations outside of the JSON array.
+Constraint block:
+- Compare the Live DOM layout structure against the official PDF guideline rules for this specific path.
+- Output findings strictly as a valid, parsable JSON array of objects with keys: `element_selector`, `expected_behavior`, `observed_behavior`, and `severity`.
+- Do not wrap the output in markdown text wrappers or include pleasantries.
+- Do not invent requirements. Only report discrepancies that are supported by the retrieved guideline rules.
+- If the live page complies, output exactly [].
+- Valid severity values are "critical", "high", "medium", and "low".
 """
 
 
-USER_PROMPT_TEMPLATE = """Compare the two blocks:
+USER_PROMPT_TEMPLATE = """## Target Path
+{target_path}
 
-### Documented Rules Context:
-{retrieved_guidelines}
+## Official PDF Guideline Rules Retrieved For This Path
+{retrieved_guidelines_text}
 
-### Live DOM UI JSON State:
-{live_page_state}
+## Live DOM Layout Matrix
+{live_dom_json}
 
-Return a raw JSON array representing the Discrepancy Report.
-Each object in the array must detail:
-- `element_selector`: selector hint, label, text, or selector description of the UI element in violation
-- `expected_rule_behavior`: specific requirement from the guidelines
-- `observed_live_behavior`: what was actually observed in the live DOM
-- `severity_level`: compliance violation severity ("High", "Medium", or "Low")
-- `screenshot_file`: file path of the screenshot captured for this page state
-
-Required JSON Schema:
-[
-  {{
-    "element_selector": "string",
-    "expected_rule_behavior": "string",
-    "observed_live_behavior": "string",
-    "severity_level": "High" | "Medium" | "Low",
-    "screenshot_file": "string"
-  }}
-]
+## Task
+Return only a JSON array. Each object must contain exactly:
+- element_selector
+- expected_behavior
+- observed_behavior
+- severity
 """
 
 
-JSON_REPAIR_PROMPT_TEMPLATE = """The previous answer was not valid JSON or did not match the required schema.
-Return the same compliance report as strict raw JSON only. No markdown. No commentary.
+REPAIR_PROMPT_TEMPLATE = """Your previous response was not valid JSON with the required schema.
+Return only a valid JSON array of objects with keys:
+element_selector, expected_behavior, observed_behavior, severity.
 
-Invalid answer:
-{invalid_answer}
+Previous response:
+{bad_output}
 """
-
-
-@dataclass(frozen=True)
-class ModelBundle:
-    tokenizer: Any
-    model: Any
-    use_api: bool = False
-    api_client: Any = None
-    model_name: str = ""
 
 
 def configure_logging(verbose: bool) -> None:
@@ -108,92 +79,35 @@ def configure_logging(verbose: bool) -> None:
     )
 
 
-def load_json_file(path: Path) -> Any:
-    if not path.exists():
-        raise RuntimeError(f"File not found: {path}")
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON in {path}: {exc}") from exc
-
-
-def compact_text(value: str, limit: int) -> str:
-    value = re.sub(r"\s+", " ", value or "").strip()
-    if len(value) <= limit:
+def compact(value: Any, max_chars: int) -> str:
+    if not isinstance(value, str):
+        value = json.dumps(value, indent=2, ensure_ascii=False)
+    value = re.sub(r"\s+", " ", value).strip()
+    if len(value) <= max_chars:
         return value
-    return value[: limit - 3].rstrip() + "..."
+    return value[: max_chars - 3].rstrip() + "..."
 
 
-def compact_element(element: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "role": element.get("role"),
-        "tag": element.get("tag"),
-        "text": compact_text(str(element.get("text", "")), 260),
-        "selector_hint": element.get("selector_hint"),
-        "attributes": element.get("attributes", {}),
-        "bounds": element.get("bounds"),
-    }
+def static_scrape_failure_report(target_path: str, scrape_error_flag: str) -> list[dict[str, str]]:
+    reason = "Redirected to login page. Session dropped."
+    if scrape_error_flag and scrape_error_flag != "AUTH_REDIRECT_TRIGGERED":
+        reason = f"Scrape failed before DOM extraction: {scrape_error_flag}"
+
+    return [
+        {
+            "element_selector": "body",
+            "expected_behavior": f"{target_path} must render as an authenticated application page using persisted auth_state.json.",
+            "observed_behavior": f"CRITICAL COMPLIANCE FAILURE: {reason}",
+            "severity": "critical",
+        }
+    ]
 
 
-def compact_page_state(page_state: dict[str, Any]) -> dict[str, Any]:
-    elements = page_state.get("elements", {})
-    compact_groups: dict[str, list[dict[str, Any]]] = {}
-    if isinstance(elements, dict):
-        for group_name, group_items in elements.items():
-            if not isinstance(group_items, list):
-                continue
-            compact_groups[group_name] = [
-                compact_element(item)
-                for item in group_items[:MAX_ELEMENTS_PER_GROUP]
-                if isinstance(item, dict)
-            ]
-
-    return {
-        "url": page_state.get("url"),
-        "title": page_state.get("title"),
-        "screenshot_path": page_state.get("screenshot_path"),
-        "html_path": page_state.get("html_path"),
-        "elements": compact_groups,
-    }
-
-
-def compact_guidelines(guidelines: Any) -> list[dict[str, Any]]:
-    if isinstance(guidelines, dict) and "rules" in guidelines:
-        guidelines = guidelines["rules"]
-    if not isinstance(guidelines, list):
-        raise RuntimeError("Guidelines input must be a list, or an object with a 'rules' list.")
-
-    compacted: list[dict[str, Any]] = []
-    used_chars = 0
-    for item in guidelines:
-        if not isinstance(item, dict):
-            continue
-        content = compact_text(str(item.get("content", "")), 2_500)
-        if not content:
-            continue
-        used_chars += len(content)
-        if used_chars > MAX_RULE_CHARS:
-            break
-        compacted.append(
-            {
-                "id": item.get("id"),
-                "section_name": item.get("section_name"),
-                "url_path": item.get("url_path"),
-                "similarity": item.get("similarity"),
-                "hybrid_score": item.get("hybrid_score"),
-                "content": content,
-            }
-        )
-
-    if not compacted:
-        raise RuntimeError("No usable guideline chunks found.")
-    return compacted
-
-
-def build_messages(page_state: dict[str, Any], guidelines: list[dict[str, Any]]) -> list[dict[str, str]]:
+def build_messages(target_path: str, live_dom_json: Any, retrieved_guidelines_text: str) -> list[dict[str, str]]:
     prompt = USER_PROMPT_TEMPLATE.format(
-        live_page_state=json.dumps(page_state, indent=2, ensure_ascii=False),
-        retrieved_guidelines=json.dumps(guidelines, indent=2, ensure_ascii=False),
+        target_path=target_path,
+        retrieved_guidelines_text=compact(retrieved_guidelines_text, MAX_GUIDELINE_CHARS),
+        live_dom_json=compact(live_dom_json, MAX_DOM_CHARS),
     )
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -201,105 +115,39 @@ def build_messages(page_state: dict[str, Any], guidelines: list[dict[str, Any]])
     ]
 
 
-def _use_inference_api() -> bool:
-    """Decide whether to use HF Inference API vs local model."""
-    if HAS_TORCH and torch.cuda.is_available():
-        return False
-    if HAS_HF_CLIENT and os.environ.get("HF_TOKEN"):
-        return True
-    return False
-
-
-def load_model(model_name: str, dtype: str) -> ModelBundle:
-    if _use_inference_api():
-        logger.info("No GPU detected. Using Hugging Face Inference API for model: %s", model_name)
-        hf_token = os.environ.get("HF_TOKEN", "")
-        client = InferenceClient(token=hf_token)
-        return ModelBundle(
-            tokenizer=None,
-            model=None,
-            use_api=True,
-            api_client=client,
-            model_name=model_name,
-        )
-
-    logger.info("Loading instruction model locally: %s", model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, token=os.environ.get("HF_TOKEN"))
-    if tokenizer.pad_token_id is None:
-        tokenizer.pad_token = tokenizer.eos_token
-
-    torch_dtype = {
-        "auto": "auto",
-        "float16": torch.float16,
-        "bfloat16": torch.bfloat16,
-        "float32": torch.float32,
-    }[dtype]
-
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        token=os.environ.get("HF_TOKEN"),
-        device_map="auto",
-        torch_dtype=torch_dtype,
-        low_cpu_mem_usage=True,
-    )
-    model.eval()
-    return ModelBundle(tokenizer=tokenizer, model=model)
-
-
-def generate_text(
-    bundle: ModelBundle,
+def call_hf_inference(
     messages: list[dict[str, str]],
     *,
+    model_name: str,
     max_new_tokens: int,
     temperature: float,
 ) -> str:
-    if bundle.use_api:
-        logger.info("Sending inference request to HF API for model: %s", bundle.model_name)
-        for attempt in range(1, 4):
-            try:
-                response = bundle.api_client.chat_completion(
-                    model=bundle.model_name,
-                    messages=messages,
-                    max_tokens=max_new_tokens,
-                    temperature=max(temperature, 0.01),
-                )
-                return response.choices[0].message.content.strip()
-            except Exception as exc:
-                if attempt == 3:
-                    raise RuntimeError(f"HF Inference API failed after 3 attempts: {exc}") from exc
-                wait_s = 2 ** attempt
-                logger.warning("HF API attempt %d failed, retrying in %ds: %s", attempt, wait_s, exc)
-                time.sleep(wait_s)
+    token = os.environ.get("HF_TOKEN")
+    if not token:
+        raise RuntimeError("Missing HF_TOKEN for Hugging Face Serverless Inference API.")
 
-    prompt = render_chat_prompt(bundle.tokenizer, messages)
-    inputs = bundle.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=24_000)
-    inputs = {key: value.to(bundle.model.device) for key, value in inputs.items()}
+    client = InferenceClient(token=token)
+    for attempt in range(1, 4):
+        try:
+            response = client.chat_completion(
+                model=model_name,
+                messages=messages,
+                max_tokens=max_new_tokens,
+                temperature=max(temperature, 0.01),
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as exc:
+            if attempt == 3:
+                raise RuntimeError(f"Hugging Face inference failed after 3 attempts: {exc}") from exc
+            wait_seconds = 2**attempt
+            logger.warning("HF inference attempt %s failed; retrying in %ss: %s", attempt, wait_seconds, exc)
+            time.sleep(wait_seconds)
 
-    do_sample = temperature > 0
-    generation_config = GenerationConfig(
-        max_new_tokens=max_new_tokens,
-        temperature=temperature if do_sample else None,
-        do_sample=do_sample,
-        pad_token_id=bundle.tokenizer.pad_token_id,
-        eos_token_id=bundle.tokenizer.eos_token_id,
-        repetition_penalty=1.03,
-    )
-
-    with torch.inference_mode():
-        output = bundle.model.generate(**inputs, generation_config=generation_config)
-
-    generated_ids = output[0][inputs["input_ids"].shape[-1] :]
-    return bundle.tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
+    raise RuntimeError("Unexpected Hugging Face inference failure.")
 
 
-def render_chat_prompt(tokenizer: Any, messages: list[dict[str, str]]) -> str:
-    if hasattr(tokenizer, "apply_chat_template") and tokenizer.chat_template:
-        return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    return "\n\n".join(f"{message['role'].upper()}:\n{message['content']}" for message in messages) + "\n\nASSISTANT:\n"
-
-
-def extract_json_object(text: str) -> list[dict[str, Any]]:
-    cleaned = text.strip()
+def parse_json_array(raw_output: str) -> list[dict[str, Any]]:
+    cleaned = raw_output.strip()
     cleaned = re.sub(r"^```(?:json)?", "", cleaned, flags=re.IGNORECASE).strip()
     cleaned = re.sub(r"```$", "", cleaned).strip()
 
@@ -309,193 +157,130 @@ def extract_json_object(text: str) -> list[dict[str, Any]]:
         start = cleaned.find("[")
         end = cleaned.rfind("]")
         if start == -1 or end == -1 or end <= start:
-            start = cleaned.find("{")
-            end = cleaned.rfind("}")
-            if start == -1 or end == -1 or end <= start:
-                raise
-            parsed = [json.loads(cleaned[start : end + 1])]
-        else:
-            parsed = json.loads(cleaned[start : end + 1])
+            raise
+        parsed = json.loads(cleaned[start : end + 1])
 
     if not isinstance(parsed, list):
-        if isinstance(parsed, dict):
-            return [parsed]
-        raise RuntimeError("Model output must be a JSON array or object.")
+        raise RuntimeError("LLM output must be a JSON array.")
     return parsed
 
 
-def validate_report(report: Any) -> list[dict[str, Any]]:
-    if not isinstance(report, list):
-        raise RuntimeError("Report must be a JSON list.")
+def validate_findings(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
+    normalized: list[dict[str, str]] = []
+    for index, item in enumerate(findings):
+        if not isinstance(item, dict):
+            raise RuntimeError(f"Finding {index} is not a JSON object.")
 
-    required_fields = {
-        "element_selector",
-        "expected_rule_behavior",
-        "observed_live_behavior",
-        "severity_level",
-        "screenshot_file",
-    }
-    for index, discrepancy in enumerate(report):
-        if not isinstance(discrepancy, dict):
-            raise RuntimeError(f"Discrepancy at index {index} must be a JSON object.")
-
-        normalized = {}
-        for k, v in discrepancy.items():
-            norm_k = k.lower().replace(" ", "_").replace("-", "_")
-            normalized[norm_k] = v
-
-        selector = (
-            normalized.get("element_selector") or 
-            normalized.get("selector") or 
-            normalized.get("element_identifier") or 
-            normalized.get("element") or 
-            "Unknown element"
-        )
-        expected = (
-            normalized.get("expected_rule_behavior") or 
-            normalized.get("expected_behavior") or 
-            normalized.get("expected_rule") or 
-            normalized.get("what_rule_required") or 
-            "Required rule not specified"
-        )
-        observed = (
-            normalized.get("observed_live_behavior") or 
-            normalized.get("observed_behavior") or 
-            normalized.get("observed_live") or 
-            normalized.get("what_live_site_has") or 
-            "Observed behavior not specified"
-        )
-        severity = (
-            normalized.get("severity_level") or 
-            normalized.get("severity") or 
-            "Medium"
-        )
-        screenshot = (
-            normalized.get("screenshot_file") or 
-            normalized.get("screenshot") or 
-            normalized.get("screenshot_reference") or 
-            "unknown_screenshot.png"
-        )
-
-        severity_str = str(severity).strip().capitalize()
-        if severity_str not in {"High", "Medium", "Low"}:
-            severity_str = "Medium"
-
-        report[index] = {
-            "element_selector": str(selector),
-            "expected_rule_behavior": str(expected),
-            "observed_live_behavior": str(observed),
-            "severity_level": severity_str,
-            "screenshot_file": str(screenshot),
+        normalized_item = {str(key).lower().replace("-", "_"): value for key, value in item.items()}
+        finding = {
+            "element_selector": str(normalized_item.get("element_selector", "")).strip(),
+            "expected_behavior": str(normalized_item.get("expected_behavior", "")).strip(),
+            "observed_behavior": str(normalized_item.get("observed_behavior", "")).strip(),
+            "severity": str(normalized_item.get("severity", "medium")).strip().lower(),
         }
 
-    return report
+        missing = [key for key, value in finding.items() if not value]
+        if missing:
+            raise RuntimeError(f"Finding {index} is missing required values: {missing}")
+        if finding["severity"] not in {"critical", "high", "medium", "low"}:
+            finding["severity"] = "medium"
+        normalized.append(finding)
+    return normalized
 
 
 def run_compliance_check(
-    page_state: dict[str, Any],
-    guidelines: Any,
+    target_path: str,
+    live_dom_json: Any,
+    retrieved_guidelines_text: str,
+    scrape_error_flag: str | None = None,
     *,
     model_name: str = DEFAULT_MODEL,
-    dtype: str = "auto",
-    max_new_tokens: int = DEFAULT_MAX_NEW_TOKENS,
-    temperature: float = DEFAULT_TEMPERATURE,
+    max_new_tokens: int = MAX_NEW_TOKENS,
+    temperature: float = 0.0,
     repair_attempts: int = 1,
-) -> list[dict[str, Any]]:
-    screenshot_file = page_state.get("screenshot_path", "")
-    if screenshot_file:
-        screenshot_file_name = Path(screenshot_file).name
-        page_state["screenshot_file"] = screenshot_file_name
+) -> list[dict[str, str]]:
+    """Return a strict JSON-compatible discrepancy list."""
+    if scrape_error_flag:
+        logger.warning("Bypassing LLM for %s because scrape_error_flag=%s", target_path, scrape_error_flag)
+        return static_scrape_failure_report(target_path, scrape_error_flag)
 
-    compacted_page_state = compact_page_state(page_state)
-    compacted_page_state["screenshot_file"] = page_state.get("screenshot_file", "screenshot.png")
-    compacted_guidelines = compact_guidelines(guidelines)
-    messages = build_messages(compacted_page_state, compacted_guidelines)
-    bundle = load_model(model_name=model_name, dtype=dtype)
-
-    raw_answer = generate_text(
-        bundle,
+    messages = build_messages(target_path, live_dom_json, retrieved_guidelines_text)
+    raw = call_hf_inference(
         messages,
+        model_name=model_name,
         max_new_tokens=max_new_tokens,
         temperature=temperature,
     )
 
     for attempt in range(repair_attempts + 1):
         try:
-            report = validate_report(extract_json_object(raw_answer))
-            return report
+            return validate_findings(parse_json_array(raw))
         except Exception as exc:
             if attempt >= repair_attempts:
-                raise RuntimeError(f"Model did not produce valid report JSON: {exc}\nRaw output:\n{raw_answer}") from exc
-            logger.warning("Model output failed validation; attempting JSON repair: %s", exc)
-            repair_messages = [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": JSON_REPAIR_PROMPT_TEMPLATE.format(invalid_answer=raw_answer)},
-            ]
-            raw_answer = generate_text(
-                bundle,
-                repair_messages,
+                raise RuntimeError(f"LLM returned invalid discrepancy JSON: {exc}\nRaw output:\n{raw}") from exc
+            logger.warning("Invalid LLM JSON; requesting repair: %s", exc)
+            raw = call_hf_inference(
+                [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": REPAIR_PROMPT_TEMPLATE.format(bad_output=raw)},
+                ],
+                model_name=model_name,
                 max_new_tokens=max_new_tokens,
                 temperature=0.0,
             )
 
-    raise RuntimeError("Unexpected compliance validation failure.")
+    raise RuntimeError("Unexpected LLM validation failure.")
+
+
+def load_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Compare live page state against retrieved guideline chunks.")
-    parser.add_argument("--page-state", required=True, help="Path to JSON file from scraper.py.")
-    parser.add_argument("--guidelines", required=True, help="Path to JSON output from retrieval_engine.py.")
-    parser.add_argument("--output", help="Where to save the discrepancy report JSON.")
-    parser.add_argument("--model", default=os.environ.get("COMPLIANCE_MODEL", DEFAULT_MODEL), help="Hugging Face instruct model.")
-    parser.add_argument(
-        "--dtype",
-        choices=["auto", "float16", "bfloat16", "float32"],
-        default=os.environ.get("COMPLIANCE_DTYPE", "auto"),
-        help="Torch dtype for local inference.",
-    )
-    parser.add_argument("--max-new-tokens", type=int, default=DEFAULT_MAX_NEW_TOKENS)
-    parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE)
-    parser.add_argument("--repair-attempts", type=int, default=1)
-    parser.add_argument("--verbose", action="store_true", help="Enable debug logging.")
+    parser = argparse.ArgumentParser(description="Run strict LLM compliance comparison.")
+    parser.add_argument("--target-path", required=True)
+    parser.add_argument("--live-dom-json", required=True, help="Path to capture JSON.")
+    parser.add_argument("--guidelines", required=True, help="Path to retrieved guidelines JSON or text.")
+    parser.add_argument("--scrape-error-flag")
+    parser.add_argument("--output")
+    parser.add_argument("--model", default=os.environ.get("COMPLIANCE_MODEL", DEFAULT_MODEL))
+    parser.add_argument("--verbose", action="store_true")
     return parser.parse_args()
 
 
 def main() -> int:
     if load_dotenv is not None:
         load_dotenv()
-
     args = parse_args()
     configure_logging(args.verbose)
 
     try:
-        page_state = load_json_file(Path(args.page_state).expanduser().resolve())
-        guidelines = load_json_file(Path(args.guidelines).expanduser().resolve())
-        report = run_compliance_check(
-            page_state=page_state,
-            guidelines=guidelines,
+        live_dom_json = load_json(Path(args.live_dom_json))
+        guidelines_path = Path(args.guidelines)
+        raw_guidelines = guidelines_path.read_text(encoding="utf-8")
+        try:
+            guidelines_payload = json.loads(raw_guidelines)
+            retrieved_guidelines_text = json.dumps(guidelines_payload, indent=2, ensure_ascii=False)
+        except json.JSONDecodeError:
+            retrieved_guidelines_text = raw_guidelines
+
+        findings = run_compliance_check(
+            target_path=args.target_path,
+            live_dom_json=live_dom_json,
+            retrieved_guidelines_text=retrieved_guidelines_text,
+            scrape_error_flag=args.scrape_error_flag,
             model_name=args.model,
-            dtype=args.dtype,
-            max_new_tokens=args.max_new_tokens,
-            temperature=args.temperature,
-            repair_attempts=args.repair_attempts,
         )
-
-        output_json = json.dumps(report, indent=2, ensure_ascii=False)
+        output = json.dumps(findings, indent=2, ensure_ascii=False)
         if args.output:
-            output_path = Path(args.output).expanduser().resolve()
+            output_path = Path(args.output)
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            output_path.write_text(output_json, encoding="utf-8")
-            logger.info("Saved discrepancy report: %s", output_path)
+            output_path.write_text(output, encoding="utf-8")
         else:
-            print(output_json)
-    except KeyboardInterrupt:
-        logger.error("Interrupted by user")
-        return 130
+            print(output)
     except Exception as exc:
-        logger.exception("Compliance check failed: %s", exc)
+        logger.exception("Compliance judge failed: %s", exc)
         return 1
-
     return 0
 
 

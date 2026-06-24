@@ -1,78 +1,31 @@
 """
-Async stateful Playwright scraper for WaiverPro compliance captures.
-
-This module has two phases:
-  1. login_and_save_state(...) caches authenticated browser storage in auth_state.json.
-  2. scrape_page_state(...) opens a fresh context from auth_state.json for each secure page.
-
-The explicit auth redirect guard prevents login-page DOMs from being sent to the LLM judge.
+src/utils/browser_pool.py
+Stateful session caching and secure route scraping using async Playwright.
 """
 
 from __future__ import annotations
 
-import argparse
-import asyncio
-import json
 import logging
 import os
-import re
-import sys
 import time
-from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
-from playwright.async_api import Browser, Page, TimeoutError as PlaywrightTimeoutError
-from playwright.async_api import async_playwright
+from playwright.async_api import Browser, BrowserContext, Page, TimeoutError as PlaywrightTimeoutError
 
-try:
-    from dotenv import load_dotenv
-except ImportError:  # pragma: no cover
-    load_dotenv = None
-
+logger = logging.getLogger("browser_pool")
 
 AUTH_STATE_PATH = Path("auth_state.json")
 CAPTURE_DIR = Path("captured_states")
-LOGIN_PATH = "/login"
-DASHBOARD_LANDING_PATH = "/dashboard/my-applications"
 NAVIGATION_TIMEOUT_MS = 30_000
 POST_LOAD_SETTLE_MS = 1_000
-
-logger = logging.getLogger("scraper")
-
-
-@dataclass(frozen=True)
-class PageCapture:
-    target_url: str
-    current_url: str
-    title: str
-    captured_at_unix: float
-    screenshot_path: str
-    html_path: str
-    json_path: str
-    inner_text: str
-    dom: dict[str, list[dict[str, Any]]]
-
-
-def configure_logging(verbose: bool) -> None:
-    logging.basicConfig(
-        level=logging.DEBUG if verbose else logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s - %(message)s",
-    )
 
 
 def absolute_url(base_url: str, path_or_url: str) -> str:
     if path_or_url.startswith(("http://", "https://")):
         return path_or_url
     return urljoin(base_url.rstrip("/") + "/", path_or_url.lstrip("/"))
-
-
-def safe_filename(url: str) -> str:
-    parsed = urlparse(url)
-    raw = parsed.path.strip("/") or "home"
-    clean = re.sub(r"[^a-zA-Z0-9._-]+", "_", raw)
-    return f"{clean}-{time.strftime('%Y%m%d-%H%M%S')}"
 
 
 def is_secure_target(target_url: str) -> bool:
@@ -93,15 +46,14 @@ async def wait_for_application_idle(page: Page) -> None:
     await page.wait_for_timeout(POST_LOAD_SETTLE_MS)
 
 
-async def login_and_save_state(
+async def login_and_cache_session(
     browser: Browser,
     base_url: str,
     username: str,
     password: str,
-    *,
-    auth_state_path: Path = AUTH_STATE_PATH,
 ) -> None:
-    """Log in once and persist Playwright storage state to auth_state.json."""
+    """Navigate to login page, authenticate, and cache storage state in auth_state.json."""
+    logger.info("Initializing session cache at %s", base_url)
     context = await browser.new_context(
         viewport={"width": 1440, "height": 1200},
         device_scale_factor=2,
@@ -111,35 +63,36 @@ async def login_and_save_state(
     page = await context.new_page()
 
     try:
-        login_url = absolute_url(base_url, LOGIN_PATH)
-        logger.info("Opening login page: %s", login_url)
+        login_url = absolute_url(base_url, "/login")
+        logger.info("Navigating to login page: %s", login_url)
         await page.goto(login_url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS)
 
         await page.fill("#email", username, timeout=NAVIGATION_TIMEOUT_MS)
         await page.fill("#password", password, timeout=NAVIGATION_TIMEOUT_MS)
         await page.click("[data-testid='btn-login']", timeout=NAVIGATION_TIMEOUT_MS)
 
-        landing_url = absolute_url(base_url, DASHBOARD_LANDING_PATH)
-        logger.info("Waiting for dashboard landing page: %s", landing_url)
+        # Wait for dashboard navigation
+        logger.info("Waiting for redirect to dashboard my-applications page...")
         try:
-            await page.wait_for_url(f"**{DASHBOARD_LANDING_PATH}**", timeout=NAVIGATION_TIMEOUT_MS)
+            await page.wait_for_url("**/dashboard/my-applications", timeout=NAVIGATION_TIMEOUT_MS)
         except PlaywrightTimeoutError:
             await wait_for_application_idle(page)
-            if DASHBOARD_LANDING_PATH not in page.url:
-                raise RuntimeError(f"LOGIN_DID_NOT_REACH_DASHBOARD current_url={page.url}")
+            if "/dashboard/my-applications" not in page.url:
+                raise RuntimeError(f"Login failed to reach dashboard. Current URL: {page.url}")
 
         await wait_for_application_idle(page)
-        auth_state_path.parent.mkdir(parents=True, exist_ok=True)
-        await context.storage_state(path=str(auth_state_path))
-        logger.info("Saved authenticated browser state to %s", auth_state_path.resolve())
-    except Exception:
-        logger.exception("Authentication state capture failed")
+        AUTH_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        await context.storage_state(path=str(AUTH_STATE_PATH))
+        logger.info("Auth state cached successfully at %s", AUTH_STATE_PATH.resolve())
+    except Exception as exc:
+        logger.exception("login_and_cache_session failed: %s", exc)
         raise
     finally:
         await context.close()
 
 
 async def extract_dom_layout(page: Page) -> dict[str, list[dict[str, Any]]]:
+    """Extract interactive and structural elements from the page for auditing."""
     raw = await page.evaluate(
         """
         () => {
@@ -229,19 +182,17 @@ async def extract_dom_layout(page: Page) -> dict[str, list[dict[str, Any]]]:
     return grouped
 
 
-async def scrape_page_state(
+async def secure_scrape_route(
     browser: Browser,
     target_url: str,
-    *,
-    auth_state_path: Path = AUTH_STATE_PATH,
-    output_dir: Path = CAPTURE_DIR,
-) -> PageCapture:
-    """Scrape a secure page from cached auth state and fail fast on login redirects."""
-    if not auth_state_path.exists():
-        raise RuntimeError(f"AUTH_STATE_MISSING path={auth_state_path}")
+) -> dict[str, Any]:
+    """Scrape a secure page using cached auth state and fail fast if redirected to login."""
+    if not AUTH_STATE_PATH.exists():
+        raise RuntimeError("AUTH_STATE_MISSING")
 
+    logger.info("Initializing context for route: %s", target_url)
     context = await browser.new_context(
-        storage_state=str(auth_state_path),
+        storage_state=str(AUTH_STATE_PATH),
         viewport={"width": 1440, "height": 1200},
         device_scale_factor=2,
     )
@@ -250,90 +201,43 @@ async def scrape_page_state(
     page = await context.new_page()
 
     try:
-        logger.info("Scraping target page: %s", target_url)
+        logger.info("Navigating to target URL: %s", target_url)
         await page.goto(target_url, wait_until="networkidle", timeout=NAVIGATION_TIMEOUT_MS)
         await wait_for_application_idle(page)
 
+        # Anti-hallucination check
         current_url = page.url
+        logger.debug("Current loaded URL is %s", current_url)
         if "/login" in current_url and is_secure_target(target_url):
+            logger.error("Auth redirect detected. Page redirected to login screen.")
             raise RuntimeError("AUTH_REDIRECT_TRIGGERED")
 
-        output_dir.mkdir(parents=True, exist_ok=True)
-        basename = safe_filename(target_url)
-        screenshot_path = output_dir / f"{basename}.png"
-        html_path = output_dir / f"{basename}.html"
-        json_path = output_dir / f"{basename}.json"
-
-        body = page.locator("body")
-        inner_text = await body.inner_text(timeout=NAVIGATION_TIMEOUT_MS)
-        html = await body.evaluate("node => node.innerHTML")
-        dom = await extract_dom_layout(page)
+        CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        parsed = urlparse(target_url)
+        path_slug = (parsed.path.strip("/") or "home").replace("/", "_")
+        
+        screenshot_path = CAPTURE_DIR / f"{path_slug}-{timestamp}.png"
         await page.screenshot(path=str(screenshot_path), full_page=True, type="png")
-        html_path.write_text(html, encoding="utf-8")
 
-        capture = PageCapture(
-            target_url=target_url,
-            current_url=current_url,
-            title=await page.title(),
-            captured_at_unix=time.time(),
-            screenshot_path=str(screenshot_path.resolve()),
-            html_path=str(html_path.resolve()),
-            json_path=str(json_path.resolve()),
-            inner_text=inner_text,
-            dom=dom,
-        )
-        json_path.write_text(json.dumps(asdict(capture), indent=2, ensure_ascii=False), encoding="utf-8")
-        logger.info("Saved page capture: %s", json_path.resolve())
-        return capture
+        body_locator = page.locator("body")
+        inner_text = await body_locator.inner_text(timeout=NAVIGATION_TIMEOUT_MS)
+        dom = await extract_dom_layout(page)
+
+        payload = {
+            "target_url": target_url,
+            "current_url": current_url,
+            "title": await page.title(),
+            "captured_at_unix": time.time(),
+            "screenshot_path": str(screenshot_path.resolve()),
+            "inner_text": inner_text,
+            "dom": dom,
+        }
+        return payload
     except RuntimeError:
         raise
-    except Exception:
-        logger.exception("Failed to scrape target page: %s", target_url)
+    except Exception as exc:
+        logger.exception("Secure scrape failed for %s: %s", target_url, exc)
         raise
     finally:
         await context.close()
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Cache auth state or scrape a page using saved auth.")
-    parser.add_argument("--base-url", default=os.environ.get("APP_BASE_URL"))
-    parser.add_argument("--username", default=os.environ.get("APP_LOGIN_EMAIL", "m@example.com"))
-    parser.add_argument("--password", default=os.environ.get("APP_LOGIN_PASSWORD"))
-    parser.add_argument("--target-url", help="Full target URL to scrape after auth state exists.")
-    parser.add_argument("--login", action="store_true", help="Only refresh auth_state.json.")
-    parser.add_argument("--headed", action="store_true")
-    parser.add_argument("--verbose", action="store_true")
-    return parser.parse_args()
-
-
-async def async_main() -> int:
-    if load_dotenv is not None:
-        load_dotenv()
-    args = parse_args()
-    configure_logging(args.verbose)
-
-    if not args.base_url:
-        logger.error("Missing APP_BASE_URL or --base-url.")
-        return 1
-    if not args.password:
-        logger.error("Missing APP_LOGIN_PASSWORD or --password.")
-        return 1
-
-    try:
-        async with async_playwright() as playwright:
-            browser = await playwright.chromium.launch(headless=not args.headed)
-            try:
-                if args.login or not args.target_url:
-                    await login_and_save_state(browser, args.base_url, args.username, args.password)
-                if args.target_url:
-                    await scrape_page_state(browser, args.target_url)
-            finally:
-                await browser.close()
-    except Exception as exc:
-        logger.exception("Scraper command failed: %s", exc)
-        return 1
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(asyncio.run(async_main()))
