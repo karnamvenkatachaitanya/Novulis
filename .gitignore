@@ -26,3 +26,4 @@ reports/
 # Actually, the user guideline PDF is ~8MB. It's better not to push large files to GitHub if not required. Let's keep it ignored.
 WaiverPro-User-Guidelines-WITH-DISCREPANCIES.pdf
 Documentation_Compliance_Agent_Assignment.pdf
+auth_state.json

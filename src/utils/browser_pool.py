@@ -202,7 +202,7 @@ async def secure_scrape_route(
 
     try:
         logger.info("Navigating to target URL: %s", target_url)
-        await page.goto(target_url, wait_until="networkidle", timeout=NAVIGATION_TIMEOUT_MS)
+        await page.goto(target_url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS)
         await wait_for_application_idle(page)
 
         # Anti-hallucination check

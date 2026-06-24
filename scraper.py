@@ -251,7 +251,7 @@ async def scrape_page_state(
 
     try:
         logger.info("Scraping target page: %s", target_url)
-        await page.goto(target_url, wait_until="networkidle", timeout=NAVIGATION_TIMEOUT_MS)
+        await page.goto(target_url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS)
         await wait_for_application_idle(page)
 
         current_url = page.url

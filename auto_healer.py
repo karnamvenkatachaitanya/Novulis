@@ -432,7 +432,7 @@ def close_issue(config: GitHubConfig, issue_number: int) -> None:
 
 
 def heal_issue(
-    config: GitHubConfig,
+    config: GitHubConfig | None,
     issue: ComplianceIssue,
     project_root: Path,
     *,
@@ -458,8 +458,11 @@ def heal_issue(
         logger.error("Issue #%s left open because verification failed.", issue.number)
         return False
 
-    comment_on_issue(config, issue.number, "Resolved automatically by AI Compliance Agent.")
-    close_issue(config, issue.number)
+    if config is not None:
+        comment_on_issue(config, issue.number, "Resolved automatically by AI Compliance Agent.")
+        close_issue(config, issue.number)
+    else:
+        logger.info("Mock GitHub issue comment and close completed successfully.")
     logger.info("Closed issue #%s.", issue.number)
     return True
 
@@ -491,6 +494,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Limit remediation to a single GitHub issue number.",
     )
     parser.add_argument(
+        "--mock-issues-file",
+        help="Path to a local JSON file containing mock open GitHub issues for offline testing.",
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="Show debug logging.",
@@ -505,8 +512,17 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         project_root = Path(args.project_root).resolve()
-        config = get_github_config()
-        raw_issues = fetch_open_bug_issues(config)
+        
+        if args.mock_issues_file:
+            logger.info("Running in mock mode. Loading issues from %s", args.mock_issues_file)
+            mock_path = Path(args.mock_issues_file).resolve()
+            if not mock_path.is_file():
+                raise AutoHealerError(f"Mock issues file not found: {mock_path}")
+            raw_issues = json.loads(mock_path.read_text(encoding="utf-8"))
+            config = None
+        else:
+            config = get_github_config()
+            raw_issues = fetch_open_bug_issues(config)
 
         parsed_issues = [parsed for issue in raw_issues if (parsed := parse_issue(issue)) is not None]
         if args.issue_number is not None:
