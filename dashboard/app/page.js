@@ -269,38 +269,40 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen p-6 flex flex-col justify-between text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen p-4 md:p-6 flex flex-col justify-between text-slate-800 dark:text-slate-100 transition-colors duration-300">
       {/* 1. Header */}
-      <header className="flex justify-between items-center mb-6 border-b border-slate-300 dark:border-slate-800 pb-4">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-slate-300 dark:border-slate-800 pb-4 gap-4 w-full">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-650 to-cyan-600 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-650 to-cyan-600 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
             WaiverPro Compliance Dashboard
           </h1>
           <p className="text-sm text-slate-700 dark:text-slate-400 mt-1 font-medium">Real-Time Autonomous QA Agent Controller</p>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-row gap-3 items-center w-full sm:w-auto justify-between sm:justify-end">
           {/* Light/Dark Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg bg-slate-200/90 hover:bg-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-350 dark:border-slate-700 transition-all cursor-pointer shadow-sm text-sm font-semibold"
+            className="p-2 rounded-lg bg-slate-200/90 hover:bg-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-350 dark:border-slate-700 transition-all cursor-pointer shadow-sm text-xs sm:text-sm font-semibold"
             title="Toggle theme mode"
           >
             {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
           </button>
-          <span className="text-xs text-slate-700 dark:text-gray-500 font-mono font-bold">Agent Status:</span>
-          {status === "idle" && <span className="badge badge-low">Idle</span>}
-          {status === "running" && <span className="badge badge-high animate-pulse">Running Sweeps</span>}
-          {status === "success" && <span className="badge badge-low">Audit Complete</span>}
-          {status === "error" && <span className="badge badge-critical">Sweep Error</span>}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-700 dark:text-gray-500 font-mono font-bold">Status:</span>
+            {status === "idle" && <span className="badge badge-low">Idle</span>}
+            {status === "running" && <span className="badge badge-high animate-pulse">Running</span>}
+            {status === "success" && <span className="badge badge-low">Success</span>}
+            {status === "error" && <span className="badge badge-critical">Error</span>}
+          </div>
         </div>
       </header>
-
+ 
       {/* 2. Visual Workflow Progress Indicator */}
-      <section className="glass-panel p-6 mb-6">
+      <section className="glass-panel p-4 sm:p-6 mb-6">
         <h3 className="text-xs font-bold tracking-wider text-slate-800 dark:text-gray-400 font-mono uppercase mb-4">
           Agent Operational Workflow Sequence
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {WORKFLOW_STEPS.map((step) => {
             const isCompleted = workflowStep > step.id;
             const isActive = workflowStep === step.id;
@@ -407,7 +409,7 @@ export default function Home() {
         {/* Center & Right Column: Browser Simulator & Results */}
         <section className="xl:col-span-2 flex flex-col gap-6">
             {/* Browser Simulator */}
-          <div className="glass-panel overflow-hidden flex flex-col relative min-h-[400px]">
+          <div className="glass-panel overflow-hidden flex flex-col relative flex-1 min-h-[400px]">
             {/* Mac Browser Header */}
             <div className="bg-slate-200/90 dark:bg-gray-900/90 px-4 py-2 flex items-center gap-3 border-b border-slate-300 dark:border-gray-800">
               <div className="flex gap-1.5">
@@ -422,7 +424,7 @@ export default function Home() {
             </div>
  
             {/* Simulated Frame Content */}
-            <div className="flex-1 bg-slate-100 dark:bg-[#10131E] flex flex-col items-center justify-center p-6 min-h-[350px] relative transition-colors duration-300">
+            <div className="flex-1 bg-slate-100 dark:bg-[#10131E] flex flex-col items-center justify-center p-6 relative transition-colors duration-300 w-full h-full">
               {/* Scan Beam animation */}
               {status === "running" && simStep === "dashboard" && <div className="scan-overlay" />}
  
