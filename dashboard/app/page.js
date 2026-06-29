@@ -418,7 +418,7 @@ export default function Home() {
         {/* Center & Right Column: Browser Simulator & Results */}
         <section className="xl:col-span-2 flex flex-col gap-6">
             {/* Browser Simulator */}
-          <div className="glass-panel overflow-hidden flex flex-col relative flex-1 min-h-[400px]">
+          <div className="glass-panel overflow-hidden flex flex-col relative" style={{height: '420px'}}>
             {/* Mac Browser Header */}
             <div className="bg-slate-200/90 dark:bg-gray-900/90 px-4 py-2 flex items-center gap-3 border-b border-slate-300 dark:border-gray-800">
               <div className="flex gap-1.5">
@@ -433,9 +433,9 @@ export default function Home() {
             </div>
  
             {/* Simulated Frame Content */}
-            <div className="flex-1 bg-slate-100 dark:bg-[#10131E] flex flex-col items-center justify-center p-6 relative transition-colors duration-300 w-full h-full">
-              {/* Scan Beam animation */}
-              {status === "running" && simStep === "dashboard" && <div className="scan-overlay" />}
+            <div className="flex-1 bg-slate-100 dark:bg-[#10131E] flex flex-col items-center justify-center relative transition-colors duration-300 w-full overflow-hidden">
+              {/* Scan Beam animation — sits above the screenshot */}
+              {status === "running" && simStep === "dashboard" && <div className="scan-overlay" style={{zIndex: 10}} />}
  
               {/* Login Simulator view */}
               {simStep !== "dashboard" && simStep !== "idle" && (
@@ -489,15 +489,16 @@ export default function Home() {
  
               {/* Scraping live views with screenshot */}
               {simStep === "dashboard" && (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+                <div className="absolute inset-0 flex items-center justify-center">
                   {activeScreenshot ? (
-                    <div className="relative border border-slate-350 dark:border-gray-800 rounded-lg overflow-hidden max-w-full max-h-[350px]">
+                    <div className="relative w-full h-full overflow-hidden">
                       <img
                         src={`/api/serve-file?path=${encodeURIComponent(activeScreenshot)}`}
                         alt="Auditing View"
-                        className="object-contain max-h-[320px]"
+                        className="w-full h-full object-cover object-top"
+                        style={{position: 'relative', zIndex: 1}}
                       />
-                      <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 text-[10px] text-emerald-400 font-mono rounded">
+                      <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 text-[10px] text-emerald-400 font-mono rounded" style={{zIndex: 11}}>
                         LIVE SCREENSHOT CAPTURED
                       </div>
                     </div>

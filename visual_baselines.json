@@ -18494,5 +18494,4810 @@
       }
     ],
     "other": []
+  },
+  "/login": {
+    "buttons": [
+      {
+        "role": "button",
+        "tag": "button",
+        "text": "Forgot your password?",
+        "selector": "[data-testid=\"btn-forgot-password\"]",
+        "attributes": {
+          "type": "button",
+          "data-testid": "btn-forgot-password"
+        },
+        "bounds": {
+          "x": 431,
+          "y": 621,
+          "width": 121,
+          "height": 16
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "button",
+        "tag": "button",
+        "text": "Login",
+        "selector": "[data-testid=\"btn-login\"]",
+        "attributes": {
+          "type": "submit",
+          "data-testid": "btn-login"
+        },
+        "bounds": {
+          "x": 168,
+          "y": 697,
+          "width": 384,
+          "height": 36
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgb(5, 150, 105)",
+          "color": "rgb(248, 250, 252)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "links": [],
+    "fields": [
+      {
+        "role": "field",
+        "tag": "input",
+        "text": "",
+        "selector": "#email",
+        "attributes": {
+          "id": "email",
+          "name": "email",
+          "type": "email",
+          "placeholder": "m@example.com",
+          "data-testid": "field-email"
+        },
+        "bounds": {
+          "x": 168,
+          "y": 569,
+          "width": 384,
+          "height": 36
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "1px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": true
+        }
+      },
+      {
+        "role": "field",
+        "tag": "input",
+        "text": "",
+        "selector": "#password",
+        "attributes": {
+          "id": "password",
+          "name": "password",
+          "type": "password",
+          "data-testid": "field-password"
+        },
+        "bounds": {
+          "x": 168,
+          "y": 645,
+          "width": 384,
+          "height": 36
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "1px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": true
+        }
+      }
+    ],
+    "labels": [
+      {
+        "role": "label",
+        "tag": "label",
+        "text": "Email",
+        "selector": "[data-testid=\"login-form\"] > div.space-y-2:nth-of-type(1) > label.flex.items-center.gap-2.text-sm.leading-none.font-medium.select-none",
+        "attributes": {},
+        "bounds": {
+          "x": 168,
+          "y": 547,
+          "width": 384,
+          "height": 14
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "label",
+        "tag": "label",
+        "text": "Password",
+        "selector": "[data-testid=\"login-form\"] > div.space-y-2:nth-of-type(2) > div.flex.items-center.justify-between > label.flex.items-center.gap-2.text-sm.leading-none.font-medium.select-none",
+        "attributes": {},
+        "bounds": {
+          "x": 168,
+          "y": 622,
+          "width": 60,
+          "height": 14
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "headings": [
+      {
+        "role": "heading",
+        "tag": "h1",
+        "text": "Login to your account",
+        "selector": "[data-testid=\"page-login\"] > div.relative.flex.items-center.justify-center.px-6:nth-of-type(1) > div.w-full.max-w-sm.space-y-6:nth-of-type(2) > div.space-y-1 > h1.text-2xl.font-semibold",
+        "attributes": {},
+        "bounds": {
+          "x": 168,
+          "y": 467,
+          "width": 384,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "text": [
+      {
+        "role": "text",
+        "tag": "div",
+        "text": "WaiverPro",
+        "selector": "[data-testid=\"page-login\"] > div.relative.flex.items-center.justify-center.px-6:nth-of-type(1) > div.absolute.top-6.left-6.flex.items-center.gap-3:nth-of-type(1) > div.font-bold.text-lg:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 72,
+          "y": 28,
+          "width": 88,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Enter your email below to login to your account.",
+        "selector": "[data-testid=\"page-login\"] > div.relative.flex.items-center.justify-center.px-6:nth-of-type(1) > div.w-full.max-w-sm.space-y-6:nth-of-type(2) > div.space-y-1 > p.text-sm.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 168,
+          "y": 503,
+          "width": 384,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "other": []
+  },
+  "/": {
+    "buttons": [
+      {
+        "role": "button",
+        "tag": "button",
+        "text": "Patient Needs Waiver (PNW) Request",
+        "selector": "[data-testid=\"program-nav-0\"]",
+        "attributes": {
+          "data-testid": "program-nav-0"
+        },
+        "bounds": {
+          "x": 316,
+          "y": 452,
+          "width": 260,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgb(241, 245, 249)",
+          "color": "rgb(15, 23, 42)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "button",
+        "tag": "button",
+        "text": "Program Flexibility (PF) Request",
+        "selector": "[data-testid=\"program-nav-1\"]",
+        "attributes": {
+          "data-testid": "program-nav-1"
+        },
+        "bounds": {
+          "x": 584,
+          "y": 452,
+          "width": 228,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgb(255, 255, 255)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "1px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": true
+        }
+      },
+      {
+        "role": "button",
+        "tag": "button",
+        "text": "Workforce Shortage Waiver (WSW) Request",
+        "selector": "[data-testid=\"program-nav-2\"]",
+        "attributes": {
+          "data-testid": "program-nav-2"
+        },
+        "bounds": {
+          "x": 820,
+          "y": 452,
+          "width": 304,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgb(255, 255, 255)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "1px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": true
+        }
+      }
+    ],
+    "links": [
+      {
+        "role": "link",
+        "tag": "a",
+        "text": "Getting Started",
+        "selector": "[data-testid=\"btn-get-started\"]",
+        "attributes": {
+          "href": "/login",
+          "data-testid": "btn-get-started"
+        },
+        "bounds": {
+          "x": 1271,
+          "y": 12,
+          "width": 145,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgb(5, 150, 105)",
+          "color": "rgb(248, 250, 252)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "link",
+        "tag": "a",
+        "text": "Privacy Policy",
+        "selector": "[data-testid=\"link-privacy\"]",
+        "attributes": {
+          "href": "/privacy",
+          "data-testid": "link-privacy"
+        },
+        "bounds": {
+          "x": 1130,
+          "y": 2208,
+          "width": 83,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "link",
+        "tag": "a",
+        "text": "Terms of Service",
+        "selector": "[data-testid=\"link-terms\"]",
+        "attributes": {
+          "href": "/terms",
+          "data-testid": "link-terms"
+        },
+        "bounds": {
+          "x": 1236,
+          "y": 2208,
+          "width": 100,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "fields": [
+      {
+        "role": "field",
+        "tag": "input",
+        "text": "",
+        "selector": "[data-testid=\"hero-search\"]",
+        "attributes": {
+          "placeholder": "Search waivers",
+          "data-testid": "hero-search"
+        },
+        "bounds": {
+          "x": 384,
+          "y": 292,
+          "width": 672,
+          "height": 44
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "1px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": true
+        }
+      }
+    ],
+    "labels": [],
+    "headings": [
+      {
+        "role": "heading",
+        "tag": "h1",
+        "text": "Healthcare Waiver\nManagement",
+        "selector": "[data-testid=\"hero-section\"] > div.mx-auto.max-w-4xl.px-6.py-14.text-center.w-full > h1.text-4xl.font-bold.tracking-tight.text-black.drop-shadow-lg",
+        "attributes": {},
+        "bounds": {
+          "x": 296,
+          "y": 120,
+          "width": 848,
+          "height": 96
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(0, 0, 0)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "All Waiver Programs",
+        "selector": "[data-testid=\"section-header\"] > div.mx-auto.max-w-7xl.py-3.text-center > h2.text-3xl.font-bold.tracking-tight",
+        "attributes": {},
+        "bounds": {
+          "x": 104,
+          "y": 404,
+          "width": 1232,
+          "height": 36
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "Patient Needs Waiver (PNW) Request",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.flex.items-center.gap-3.mb-2:nth-of-type(1) > h3.text-2xl.font-bold",
+        "attributes": {},
+        "bounds": {
+          "x": 104,
+          "y": 573,
+          "width": 421,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "Program Flexibility (PF) Request",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.flex.items-center.gap-3.mb-2:nth-of-type(1) > h3.text-2xl.font-bold",
+        "attributes": {},
+        "bounds": {
+          "x": 740,
+          "y": 1041,
+          "width": 363,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "Workforce Shortage Waiver (WSW) Request",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.flex.items-center.gap-3.mb-2:nth-of-type(1) > h3.text-2xl.font-bold",
+        "attributes": {},
+        "bounds": {
+          "x": 104,
+          "y": 1593,
+          "width": 496,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "text": [
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Streamline your regulatory waiver process from submission to approval",
+        "selector": "[data-testid=\"hero-section\"] > div.mx-auto.max-w-4xl.px-6.py-14.text-center.w-full > p.mt-4.text-lg.text-muted-foreground/90.drop-shadow-md",
+        "attributes": {},
+        "bounds": {
+          "x": 296,
+          "y": 232,
+          "width": 848,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(100, 116, 139, 0.9)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Apply when the facility is seeking a waiver of the 2.4 CNA requirement to meet individual patient needs but will provide a minimum of 3.5 direct care service hours. Facilities may only submit one Patient Needs Waiver and/or one Workforce Shortage Waiver application in the same year. If submitting both, only one may be approved.",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > p.mt-3.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 104,
+          "y": 617,
+          "width": 596,
+          "height": 96
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "15–20 business days\nProcessing Time",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(1) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 144,
+          "y": 737,
+          "width": 132,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Processing Time",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(1) > span > span.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 144,
+          "y": 757,
+          "width": 100,
+          "height": 19
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "6–12 months\nWaiver Period",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(2) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 340,
+          "y": 737,
+          "width": 85,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Waiver Period",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(2) > span > span.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 340,
+          "y": 757,
+          "width": 85,
+          "height": 19
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Applies to individualized patient care plan modifications based on clinical needs",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(1) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 801,
+          "width": 493,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Documented patient or family request for accommodation required",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(2) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 833,
+          "width": 417,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Clinical assessment supporting the modification must be on file",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(3) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 865,
+          "width": 391,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Interdisciplinary team agreement and approval is required",
+        "selector": "#2a7afc48-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(4) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 897,
+          "width": 358,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Apply when the facility is seeking program flexibility to regulations. The request must include justification for the program flexibility, adequate description of the alternative concept, and documentation supporting that patient care will not be compromised. The facility may request program flexibility that is intended to be emergency or routine. An approved program flexibility request is for a limited term with a start and an end date. Facilities may submit more than one application as needed.",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > p.mt-3.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 740,
+          "y": 1085,
+          "width": 596,
+          "height": 168
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Within 60 days\nProcessing Time",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(1) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 780,
+          "y": 1277,
+          "width": 100,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Processing Time",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(1) > span > span.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 780,
+          "y": 1297,
+          "width": 100,
+          "height": 19
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "6–12 months\nWaiver Period",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(2) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 944,
+          "y": 1277,
+          "width": 85,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Waiver Period",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(2) > div.flex.items-center.gap-2:nth-of-type(2) > span > span.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 944,
+          "y": 1297,
+          "width": 85,
+          "height": 19
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Submit a detailed justification demonstrating how the alternative maintains compliance and protects residents",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(1) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 764,
+          "y": 1341,
+          "width": 572,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "All requests must be submitted online through WaiverPRO",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(2) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 764,
+          "y": 1393,
+          "width": 360,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "CDPH will respond within 60 days after all required documentation is received",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(3) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 764,
+          "y": 1425,
+          "width": 480,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Approved flexibilities include an expiration date and specific terms; may be revoked if conditions are not met",
+        "selector": "#ac552a62-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(4) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 764,
+          "y": 1457,
+          "width": 572,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Expired",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.flex.items-center.gap-3.mb-2:nth-of-type(1) > span.inline-flex.items-center.justify-center.rounded-full.border.px-2.py-0.5.font-medium.w-fit.whitespace-nowrap.shrink-0.gap-1.transition-[color,box-shadow].overflow-hidden.border-transparent.bg-destructive.text-white.text-xs",
+        "attributes": {},
+        "bounds": {
+          "x": 612,
+          "y": 1598,
+          "width": 59,
+          "height": 22
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgb(239, 68, 68)",
+          "color": "rgb(255, 255, 255)",
+          "borderStyle": "solid",
+          "borderWidth": "1px",
+          "borderColor": "rgba(0, 0, 0, 0)",
+          "borderVisible": true
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "This waiver was available from Dec 29, 2025 to Apr 30, 2026",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mb-4.p-3.rounded-md.text-sm.bg-red-50.border.border-red-200.text-red-800:nth-of-type(2) > p.text-xs",
+        "attributes": {},
+        "bounds": {
+          "x": 117,
+          "y": 1646,
+          "width": 570,
+          "height": 16
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(153, 27, 27)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Apply when the facility is seeking a waiver of the 3.5 direct care service hours requirement and/or the 2.4 CNA hours requirement due to a workforce shortage of available and appropriate health care professionals and direct care givers. Facilities may only submit one Patient Needs Waiver and/or one Workforce Shortage Waiver application in the same year. If submitting both, only one may be approved.",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > p.mt-3.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 104,
+          "y": 1691,
+          "width": 596,
+          "height": 120
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "15–20 business days\nProcessing Time",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(3) > div.flex.items-center.gap-2:nth-of-type(1) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 144,
+          "y": 1835,
+          "width": 132,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Processing Time",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(3) > div.flex.items-center.gap-2:nth-of-type(1) > span > span.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 144,
+          "y": 1855,
+          "width": 100,
+          "height": 19
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "6–12 months\nWaiver Period",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(3) > div.flex.items-center.gap-2:nth-of-type(2) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 340,
+          "y": 1835,
+          "width": 85,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Waiver Period",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > div.mt-6.flex.gap-6.text-sm:nth-of-type(3) > div.flex.items-center.gap-2:nth-of-type(2) > span > span.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 340,
+          "y": 1855,
+          "width": 85,
+          "height": 19
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Facilities may not staff below 3.2 direct care hours per patient day, even with an approved waiver",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(1) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 1899,
+          "width": 572,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Only licensed freestanding SNFs (excluding GACH distinct parts, state-owned hospitals, and developmental centers) may apply",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(2) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 1951,
+          "width": 572,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "Application Window: January 1 – April 1 annually; applications will not be accepted outside this timeframe",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(3) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 2003,
+          "width": 572,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "span",
+        "text": "One Workforce Shortage Waiver and/or one Patient Needs Waiver per year; only one may be approved",
+        "selector": "#f1b06c74-80e4-f011-8544-0022480959fd > div:nth-of-type(1) > ul.mt-6.space-y-3.text-sm > li.flex.gap-2:nth-of-type(4) > span",
+        "attributes": {},
+        "bounds": {
+          "x": 128,
+          "y": 2055,
+          "width": 572,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Copyright © 2025 WaiverPro",
+        "selector": "[data-testid=\"landing-footer\"] > div.mx-auto.max-w-7xl.px-6.py-4 > div.flex.flex-col.items-center.justify-between.gap-4.text-sm.text-muted-foreground > p",
+        "attributes": {},
+        "bounds": {
+          "x": 104,
+          "y": 2208,
+          "width": 178,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "other": []
+  },
+  "/privacy": {
+    "buttons": [],
+    "links": [
+      {
+        "role": "link",
+        "tag": "a",
+        "text": "Back to Home",
+        "selector": "[data-testid=\"link-back-to-home\"]",
+        "attributes": {
+          "href": "/",
+          "data-testid": "link-back-to-home"
+        },
+        "bounds": {
+          "x": 24,
+          "y": 48,
+          "width": 137,
+          "height": 36
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "fields": [],
+    "labels": [],
+    "headings": [
+      {
+        "role": "heading",
+        "tag": "h1",
+        "text": "Privacy Policy",
+        "selector": "[data-testid=\"heading-privacy\"]",
+        "attributes": {
+          "data-testid": "heading-privacy"
+        },
+        "bounds": {
+          "x": 24,
+          "y": 108,
+          "width": 1392,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "1. Introduction",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(1) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 208,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "2. Information We Collect",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 376,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "2.1 Personal Information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 432,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "2.2 Automatically Collected Information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 720,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "3. How We Use Your Information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 920,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "4. Information Sharing and Disclosure",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1288,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "5. Data Security",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1600,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "6. Your Rights and Choices",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1960,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "7. Data Retention",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2272,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "8. Children's Privacy",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2400,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "9. Changes to This Privacy Policy",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2528,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "10. Contact Us",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2656,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "text": [
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Last updated: December 2025",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.mb-8:nth-of-type(1) > p.text-sm.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 156,
+          "width": 1392,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Welcome to WaiverPro (\"we,\" \"our,\" or \"us\"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our waiver and program flexibility application management platform.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(1) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 256,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "By accessing or using WaiverPro, you agree to the collection and use of information in accordance with this policy. If you do not agree with our policies and practices, please do not use our service.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(1) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 320,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We collect information that you provide directly to us, including:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 472,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Name, email address, phone number, and contact information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2.mb-4:nth-of-type(1) > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 512,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Facility information, including facility name, address, and type",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2.mb-4:nth-of-type(1) > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 544,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Waiver and program flexibility application data",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2.mb-4:nth-of-type(1) > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 576,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Documentation and supporting materials uploaded to the platform",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2.mb-4:nth-of-type(1) > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 608,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Account credentials and authentication information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2.mb-4:nth-of-type(1) > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 640,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Communication preferences and correspondence",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2.mb-4:nth-of-type(1) > li:nth-of-type(6)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 672,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "When you use WaiverPro, we automatically collect certain information, including:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > p.mb-4:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 760,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Log data: IP address, browser type, operating system, pages visited, and time spent on pages",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2:nth-of-type(2) > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 800,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Device information: Device identifiers, device type, and mobile network information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2:nth-of-type(2) > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 832,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Usage data: How you interact with the platform, features used, and performance metrics",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2:nth-of-type(2) > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 864,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We use the information we collect for the following purposes:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 968,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To provide, maintain, and improve our waiver management services",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1008,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To process and manage waiver and program flexibility applications",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1040,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To facilitate communication between facilities and regulatory authorities",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1072,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To send you administrative information, updates, and notifications related to your applications",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1104,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To respond to your inquiries, comments, and support requests",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1136,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To monitor and analyze usage patterns and trends to improve our platform",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(6)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1168,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To detect, prevent, and address technical issues, security threats, or fraudulent activity",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(7)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1200,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To comply with legal obligations and regulatory requirements",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(8)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1232,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We may share your information in the following circumstances:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1336,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "With Regulatory Authorities: We may share application data and documentation with relevant regulatory bodies as part of the waiver review and approval process.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1376,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "With Service Providers: We may share information with third-party service providers who perform services on our behalf, such as hosting, data storage, and customer support.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1408,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "For Legal Compliance: We may disclose information if required by law, court order, or government regulation.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1440,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "To Protect Rights: We may share information to protect our rights, privacy, safety, or property, or that of our users or others.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1472,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "With Your Consent: We may share information with your explicit consent or at your direction.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1504,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We do not sell, rent, or trade your personal information to third parties for their marketing purposes.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > p.mt-4:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1544,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1648,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Encryption of data in transit and at rest",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1712,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Regular security assessments and vulnerability testing",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1744,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Access controls and authentication mechanisms",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1776,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Secure data centers with physical and environmental safeguards",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1808,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Employee training on data protection and privacy practices",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1840,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "However, no method of transmission over the internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your information, we cannot guarantee absolute security.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > p.mt-4:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1880,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "You have certain rights regarding your personal information, including:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2008,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Access: You can request access to the personal information we hold about you",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2048,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Correction: You can request correction of inaccurate or incomplete information",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2080,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Deletion: You can request deletion of your personal information, subject to legal and contractual obligations",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2112,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Data Portability: You can request a copy of your data in a portable format",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2144,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Opt-Out: You can opt out of certain communications by following the unsubscribe instructions in our emails",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2176,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "To exercise these rights, please contact us using the information provided in the \"Contact Us\" section below.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > p.mt-4:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2216,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We retain your personal information for as long as necessary to fulfill the purposes outlined in this Privacy Policy, unless a longer retention period is required or permitted by law. Application data and documentation may be retained in accordance with regulatory requirements and for historical record-keeping purposes.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > p",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2320,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "WaiverPro is not intended for individuals under the age of 18. We do not knowingly collect personal information from children. If we become aware that we have collected personal information from a child without parental consent, we will take steps to delete such information.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > p",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2448,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. We will notify you of any material changes by posting the new Privacy Policy on this page and updating the \"Last updated\" date. We encourage you to review this Privacy Policy periodically.",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > p",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2576,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2704,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "WaiverPro",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > div.bg-muted.p-4.rounded-lg > p.font-medium.text-foreground.mb-2:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 2760,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Email: privacy@waiverpro.com",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > div.bg-muted.p-4.rounded-lg > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 2792,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Phone: +1 (555) 123-4567",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > div.bg-muted.p-4.rounded-lg > p:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 2816,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Address: 123 Healthcare Plaza, Suite 400, New York, NY 10001",
+        "selector": "[data-testid=\"page-privacy\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > div.bg-muted.p-4.rounded-lg > p:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 2840,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "other": []
+  },
+  "/terms": {
+    "buttons": [],
+    "links": [
+      {
+        "role": "link",
+        "tag": "a",
+        "text": "Back to Home",
+        "selector": "[data-testid=\"link-back-to-home\"]",
+        "attributes": {
+          "href": "/",
+          "data-testid": "link-back-to-home"
+        },
+        "bounds": {
+          "x": 24,
+          "y": 48,
+          "width": 137,
+          "height": 36
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "fields": [],
+    "labels": [],
+    "headings": [
+      {
+        "role": "heading",
+        "tag": "h1",
+        "text": "Terms of Service",
+        "selector": "[data-testid=\"heading-terms\"]",
+        "attributes": {
+          "data-testid": "heading-terms"
+        },
+        "bounds": {
+          "x": 24,
+          "y": 108,
+          "width": 1392,
+          "height": 40
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "1. Acceptance of Terms",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(1) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 208,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "2. Description of Service",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 376,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "3. User Accounts and Registration",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 672,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "3.1 Account Creation",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 728,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "3.2 Account Eligibility",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 984,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "4. User Responsibilities and Conduct",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1104,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "4.1 Acceptable Use",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1160,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "4.2 Accurate Information",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1480,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "5. Intellectual Property Rights",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1600,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "5.1 Service Ownership",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1656,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h3",
+        "text": "5.2 User Content",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > h3.text-xl.font-medium.text-foreground.mb-3.mt-6:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1768,
+          "width": 1392,
+          "height": 28
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "6. Application Processing",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1992,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "7. Fees and Payment",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2264,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "8. Service Availability and Modifications",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2536,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "9. Disclaimer of Warranties",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2808,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "10. Limitation of Liability",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3072,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "11. Indemnification",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(11) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3376,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "12. Termination",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3504,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "13. Governing Law and Dispute Resolution",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(13) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3784,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "14. Changes to Terms",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(14) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3952,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "heading",
+        "tag": "h2",
+        "text": "15. Contact Information",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(15) > h2.text-2xl.font-semibold.text-foreground.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 4080,
+          "width": 1392,
+          "height": 32
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "text": [
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Last updated: December 2025",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.mb-8:nth-of-type(1) > p.text-sm.text-muted-foreground",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 156,
+          "width": 1392,
+          "height": 20
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "By accessing or using WaiverPro (\"the Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you disagree with any part of these terms, you may not access the Service.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(1) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 256,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "These Terms constitute a legally binding agreement between you and WaiverPro. If you are using the Service on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these Terms.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(1) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 296,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "WaiverPro is a web-based platform designed to facilitate the management, submission, and tracking of healthcare waiver applications and program flexibility requests. The Service provides tools for facilities to:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 424,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Create and submit waiver and program flexibility applications",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 488,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Track application status and review progress",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 520,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Manage facility information and documentation",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 552,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Communicate with regulatory authorities",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 584,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Access support resources and documentation",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(2) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 616,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "To use certain features of the Service, you must register for an account. You agree to:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 768,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Provide accurate, current, and complete information during registration",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 808,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Maintain and promptly update your account information",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 840,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Maintain the security of your account credentials",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 872,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Accept responsibility for all activities that occur under your account",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 904,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Notify us immediately of any unauthorized use of your account",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 936,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "You must be at least 18 years old and have the legal capacity to enter into binding agreements to use the Service. By creating an account, you represent and warrant that you meet these eligibility requirements.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(3) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1024,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "You agree to use the Service only for lawful purposes and in accordance with these Terms. You agree not to:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1200,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Violate any applicable federal, state, local, or international law or regulation",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1240,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Transmit any malicious code, viruses, or harmful materials",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1272,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Attempt to gain unauthorized access to the Service or related systems",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1304,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Interfere with or disrupt the Service or servers connected to the Service",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1336,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Use automated systems or bots to access the Service without authorization",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1368,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Impersonate any person or entity or misrepresent your affiliation",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(6)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1400,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Submit false, fraudulent, or misleading information in applications",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(7)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1432,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "You are responsible for ensuring that all information submitted through the Service, including application data and documentation, is accurate, complete, and current. Submission of false or misleading information may result in application rejection, account termination, and legal consequences.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(4) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1520,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "The Service and its original content, features, and functionality are owned by WaiverPro and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1696,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "You retain ownership of any content, data, or materials you submit through the Service (\"User Content\"). By submitting User Content, you grant WaiverPro a non-exclusive, worldwide, royalty-free license to use, store, process, and display your User Content solely for the purpose of providing the Service, including:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > p.mb-4:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 1808,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Transmitting User Content to regulatory authorities as part of the application process",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1872,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Displaying User Content to you and authorized users associated with your account",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1904,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Storing and backing up User Content",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(5) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 1936,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "WaiverPro provides a platform for submitting and managing waiver applications. Please note:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2040,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "We facilitate the submission process but do not make decisions on application approval or denial",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2080,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Application review, evaluation, and approval are conducted by relevant regulatory authorities",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2112,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Processing times and outcomes are determined solely by regulatory bodies",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2144,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "We are not responsible for delays, rejections, or decisions made by regulatory authorities",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2176,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "You remain responsible for ensuring applications meet all regulatory requirements",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(6) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2208,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Some features of the Service may be subject to fees. If applicable:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2312,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Fees will be clearly disclosed before you incur any charges",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2352,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "You agree to pay all fees associated with your use of paid features",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2384,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Fees are non-refundable unless otherwise stated or required by law",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2416,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "We reserve the right to change fees with reasonable notice",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2448,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Failure to pay fees may result in suspension or termination of your access to paid features",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(7) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(5)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2480,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We strive to maintain high availability of the Service but do not guarantee uninterrupted or error-free operation. The Service may be unavailable due to:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2584,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Scheduled maintenance or updates",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2624,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Technical failures or system errors",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2656,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Circumstances beyond our reasonable control",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2688,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We reserve the right to modify, suspend, or discontinue any aspect of the Service at any time, with or without notice. We are not liable for any losses or damages resulting from such modifications, suspensions, or discontinuations.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(8) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2728,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "THE SERVICE IS PROVIDED \"AS IS\" AND \"AS AVAILABLE\" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMISSIBLE BY LAW, WAIVERPRO DISCLAIMS ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 2856,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Warranties of merchantability and fitness for a particular purpose",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2920,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Warranties that the Service will be uninterrupted, secure, or error-free",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2952,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Warranties regarding the accuracy, reliability, or completeness of Service content",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 2984,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Warranties that any defects will be corrected",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(9) > ul.list-disc.pl-6.space-y-2 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3016,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, WAIVERPRO SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3120,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Loss of profits, revenue, data, or use",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3184,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Business interruption or loss of business opportunities",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3216,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Costs of substitute services",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3248,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Damages arising from application rejections or regulatory decisions",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3280,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Our total liability for any claims arising from or related to the Service shall not exceed the amount you paid to us in the twelve (12) months preceding the claim.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(10) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3320,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "You agree to indemnify, defend, and hold harmless WaiverPro, its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, costs, or expenses (including reasonable attorneys' fees) arising from your use of the Service, violation of these Terms, or infringement of any rights of another party.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(11) > p",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3424,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We may terminate or suspend your account and access to the Service immediately, without prior notice, for any reason, including:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3552,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Breach of these Terms",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3592,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Fraudulent or illegal activity",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3624,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Submission of false or misleading information",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3656,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "li",
+        "text": "Extended periods of account inactivity",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > ul.list-disc.pl-6.space-y-2.mb-4 > li:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 48,
+          "y": 3688,
+          "width": 1368,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Upon termination, your right to use the Service will cease immediately. We may delete your account data in accordance with our data retention policies, subject to legal and regulatory requirements.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(12) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3728,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "These Terms shall be governed by and construed in accordance with the laws of the State of New York, without regard to its conflict of law provisions.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(13) > p.mb-4:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3832,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Any disputes arising from or related to these Terms or the Service shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association, except where prohibited by law.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(13) > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 3872,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "We reserve the right to modify these Terms at any time. Material changes will be notified by posting the updated Terms on this page and updating the \"Last updated\" date. Your continued use of the Service after such modifications constitutes acceptance of the updated Terms. If you do not agree to the modified Terms, you must stop using the Service.",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(14) > p",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 4000,
+          "width": 1392,
+          "height": 48
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "If you have any questions about these Terms of Service, please contact us:",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(15) > p.mb-4",
+        "attributes": {},
+        "bounds": {
+          "x": 24,
+          "y": 4128,
+          "width": 1392,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "WaiverPro",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(15) > div.bg-muted.p-4.rounded-lg > p.font-medium.text-foreground.mb-2:nth-of-type(1)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 4184,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(2, 8, 23)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Email: legal@waiverpro.com",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(15) > div.bg-muted.p-4.rounded-lg > p:nth-of-type(2)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 4216,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Phone: +1 (555) 123-4567",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(15) > div.bg-muted.p-4.rounded-lg > p:nth-of-type(3)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 4240,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      },
+      {
+        "role": "text",
+        "tag": "p",
+        "text": "Address: 123 Healthcare Plaza, Suite 400, New York, NY 10001",
+        "selector": "[data-testid=\"page-terms\"] > div.px-6.py-12 > div.space-y-8.text-muted-foreground:nth-of-type(2) > section:nth-of-type(15) > div.bg-muted.p-4.rounded-lg > p:nth-of-type(4)",
+        "attributes": {},
+        "bounds": {
+          "x": 40,
+          "y": 4264,
+          "width": 1360,
+          "height": 24
+        },
+        "visible": true,
+        "styles": {
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(100, 116, 139)",
+          "borderStyle": "solid",
+          "borderWidth": "0px",
+          "borderColor": "rgb(226, 232, 240)",
+          "borderVisible": false
+        }
+      }
+    ],
+    "other": []
   }
 }
