@@ -31,12 +31,12 @@ WORKDIR /app/dashboard
 RUN npm install
 RUN npm run build
 
-# Expose port 3000 for the Next.js server
-EXPOSE 3000
+# Expose port 7860 for Hugging Face Spaces
+EXPOSE 7860
 
 # Set environment to production
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=7860
 
 # Start Next.js dashboard
 CMD ["npm", "run", "start"]
