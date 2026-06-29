@@ -9,21 +9,34 @@ A production-ready Python compliance automation system that automatically verifi
 ```mermaid
 graph TD
     pdf[WaiverPro PDF Guidelines] -->|ingest_guidelines.py| pg[Supabase Vector DB pgvector]
-    web[Live Web Portal] -->|scraper.py| state[Live DOM JSON & Screenshot]
-    state -->|retrieval_engine.py| pg
-    pg -->|Retrieved Guideline Chunks| agent[compliance_agent.py LLM Judge]
+    web[Live Web Portal] -->|src/compliance_agent/scraper.py| state[Live DOM JSON & Screenshot]
+    state -->|src/compliance_agent/retrieval_engine.py| pg
+    pg -->|Retrieved Guideline Chunks| agent[src/compliance_agent/compliance_agent.py LLM Judge]
     state -->|Live UI State JSON| agent
-    agent -->|JSON Discrepancy Array| main[main.py Orchestrator]
+    agent -->|JSON Discrepancy Array| main[src/compliance_agent/main.py Orchestrator]
     main -->|Secure SMTP Email Alert| email[Stakeholder Mail Box]
 ```
 
-The system is decoupled into the following modular files:
-1. **`database_setup.sql`**: PostgreSQL database schema script to enable the vector extension, create `guideline_embeddings`, compile an HNSW index, and define the `match_guidelines` similarity RPC function.
-2. **`ingest_guidelines.py`**: Ingests guidelines text from the PDF, splits them by page/headers, computes 384-dimensional vector embeddings via `sentence-transformers/all-MiniLM-L6-v2`, and uploads them to Supabase. Fully idempotent.
-3. **`scraper.py`**: Controls Playwright headless browser navigation, logs in to the authenticated portal view, captures live page DOM layout structures into structured JSON, and saves PNG screenshots.
-4. **`retrieval_engine.py`**: Encodes active page states, queries Supabase using the `match_guidelines` RPC, and retrieves the most relevant guideline text segments.
-5. **`compliance_agent.py`**: RAG compliance judge. Connects to the Hugging Face Serverless Inference API running `Qwen/Qwen2.5-7B-Instruct` (optimized for CPU-only systems to prevent OOMs), evaluates page elements against guidelines, and outputs verified discrepancy JSON reports.
-6. **`main.py`**: Master orchestrator. Sweeps all configured pages, compiles findings, embeds color-coded tables in an HTML alert, and mails it securely using STARTTLS.
+The codebase is organized into an enterprise-grade package structure under the `src/` directory with thin, root-level execution wrappers:
+
+### 1. Root Level Entrypoints
+*   **`main.py`**: Thin orchestrator entrypoint wrapper. Launches the compliance sweep pipeline.
+*   **`ingest_guidelines.py`**: Thin ingestion entrypoint wrapper. Parses and embeds the guidelines PDF.
+*   **`auto_healer.py`**: Thin healer entrypoint wrapper. Applies LLM patches to codebases based on compliance findings.
+
+### 2. Core Python Package (`src/compliance_agent/`)
+*   **`main.py`**: Master orchestrator logic. Runs sequential audits, filters baselines, compiles unified reports, and triggers SMTP alerts.
+*   **`compliance_agent.py`**: RAG compliance judge. Connects to Hugging Face Serverless APIs, filters DOM boundaries, and runs structural JSON checks.
+*   **`scraper.py`**: playwrighter browser session controller. Performs authenticated page scrapes and captures layout JSON files.
+*   **`retrieval_engine.py`**: Queries pgvector similarity matches via Supabase RPC queries with built-in retry backoff.
+*   **`ingest_guidelines.py`**: Splitting, chunking, and embedding guidelines using SentenceTransformers and Supabase.
+*   **`github_client.py`**: GitHub REST API client wrapper.
+*   **`auto_healer.py`**: Patch repair engine that heals target source components.
+
+### 3. Verification & Mock Components
+*   **`tests/`**: Directory containing consolidated automated test suites (`test_compliance.py`).
+*   **`src/components/FacilitiesTable.js`**: Mock React component containing guideline schemas for validation testing.
+*   **`dashboard/`**: Next.js client monitoring dashboard app.
 
 ---
 
@@ -94,6 +107,12 @@ python ingest_guidelines.py --pdf WaiverPro-User-Guidelines-WITH-DISCREPANCIES.p
 Run the end-to-end scraper, RAG retrieval, AI auditing, and email alert pipeline:
 ```bash
 python main.py --similarity-threshold 0.0 --smtp-starttls --verbose
+```
+
+### Step 3: Run Automated Unit Tests
+Verify package logic, DOM filter bounds, and RAG routing functions using the test suite:
+```bash
+python -m unittest tests/test_compliance.py
 ```
 
 ---
