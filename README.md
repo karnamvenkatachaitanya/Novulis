@@ -38,6 +38,21 @@ The codebase is organized into an enterprise-grade package structure under the `
 *   **`src/components/FacilitiesTable.js`**: Mock React component containing guideline schemas for validation testing.
 *   **`dashboard/`**: Next.js client monitoring dashboard app.
 
+## 🌟 Key System Features
+
+The WaiverPro Compliance system includes several enterprise-grade optimizations to ensure speed, accuracy, and operational reliability:
+
+*   **Dynamic Model Routing**: Routes LLM compliance audits based on captured DOM footprint complexity:
+    *   *Bypass Route*: Bypasses LLM calls completely if RAG retrieved zero matching rules for the active page, saving computational budget.
+    *   *Low-Latency Route (`Qwen2.5-1.5B`)*: Routes smaller page states (< 12k characters) to the lightweight 1.5B model for rapid execution (**~200ms–500ms**).
+    *   *High-Reasoning Route (`Qwen2.5-7B`)*: Routes complex layout states to the 7.6B model for deep analytical checks.
+*   **Explainable Compliance Citations**: Enforces the extraction of standard PDF rule references (`guideline_reference`) inside compliance judge reports.
+*   **Operational Error Separation**: Distinguishes pipeline, authentication redirection, and API rate limit failures from actual compliance violations, marking them as `infrastructure_error`.
+*   **Baselines Style Regression Testing**: Conducts normalized text and structural style regression tests against visual caches (`visual_baselines.json`).
+*   **SMTP Alert Cooldown Idempotency**: Suppresses alert email flood by checking run history in `.last_sent_alert.json` and skipping duplicate reports within a 1-hour window.
+*   **Global Model Caching**: Caches model weights dynamically inside a global memory dictionary (`_MODEL_CACHE`) to avoid loading embedding models per-page.
+*   **Supabase RPC Connection Retries**: Uses a 3-attempt exponential backoff retry wrapper to handle transient Supabase network disruptions.
+
 ---
 
 ## 🚀 Setup & Installation
