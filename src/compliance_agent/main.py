@@ -405,6 +405,8 @@ except ImportError:  # pragma: no cover
 
 
 DEFAULT_TARGET_PATHS = [
+    "/",
+    "/login",
     "/dashboard/my-applications",
     "/dashboard/facilities",
     "/dashboard/action-items",
@@ -414,6 +416,8 @@ DEFAULT_TARGET_PATHS = [
     "/dashboard/faqs",
     "/dashboard/tickets",
     "/dashboard/contact",
+    "/privacy",
+    "/terms",
 ]
 RETRIEVAL_DIR = Path("retrieved_context")
 REPORT_DIR = Path("reports")

@@ -309,41 +309,126 @@ async def scrape_page_state(
     auth_state_path: Path = AUTH_STATE_PATH,
     output_dir: Path = CAPTURE_DIR,
 ) -> PageCapture:
-    """Scrape a secure page from cached auth state and fail fast on login redirects."""
-    if not auth_state_path.exists():
-        raise RuntimeError(f"AUTH_STATE_MISSING path={auth_state_path}")
+    """Scrape a secure or public page with custom interactive workflows."""
+    context_args = {
+        "viewport": {"width": 1440, "height": 1200},
+        "device_scale_factor": 2,
+    }
+    if is_secure_target(target_url):
+        if not auth_state_path.exists():
+            raise RuntimeError(f"AUTH_STATE_MISSING path={auth_state_path}")
+        context_args["storage_state"] = str(auth_state_path)
 
-    context = await browser.new_context(
-        storage_state=str(auth_state_path),
-        viewport={"width": 1440, "height": 1200},
-        device_scale_factor=2,
-    )
+    context = await browser.new_context(**context_args)
     context.set_default_timeout(NAVIGATION_TIMEOUT_MS)
     context.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
     page = await context.new_page()
-
+ 
     try:
         logger.info("Scraping target page: %s", target_url)
         await page.goto(target_url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS)
         await wait_for_application_idle(page)
-
+ 
         current_url = page.url
         if "/login" in current_url and is_secure_target(target_url):
             raise RuntimeError("AUTH_REDIRECT_TRIGGERED")
-
+ 
         output_dir.mkdir(parents=True, exist_ok=True)
         basename = safe_filename(target_url)
         screenshot_path = output_dir / f"{basename}.png"
         html_path = output_dir / f"{basename}.html"
         json_path = output_dir / f"{basename}.json"
-
+ 
         body = page.locator("body")
         inner_text = await body.inner_text(timeout=NAVIGATION_TIMEOUT_MS)
         html = await body.evaluate("node => node.innerHTML")
         dom = await extract_dom_layout(page)
+        
+        # Take initial base screenshot
         await page.screenshot(path=str(screenshot_path), full_page=True, type="png")
-        html_path.write_text(html, encoding="utf-8")
 
+        # Custom interactive actions for Waiver Application wizard
+        parsed_url = urlparse(target_url)
+        path = parsed_url.path.rstrip("/")
+        
+        if path == "/dashboard/my-applications":
+            logger.info("Executing interactive actions for Waiver Application wizard...")
+            try:
+                new_app_btn = page.locator("[data-testid='btn-new-application']")
+                if await new_app_btn.count() > 0:
+                    await new_app_btn.click()
+                    await page.wait_for_timeout(1000)
+                    step1_dom = await extract_dom_layout(page)
+                    
+                    # Select type and click next
+                    await page.click("[data-testid*='waiver-type-radio-2a7afc48']", force=True)
+                    await page.click("[data-testid='btn-next']", force=True)
+                    await page.wait_for_timeout(1000)
+                    step2_dom = await extract_dom_layout(page)
+                    
+                    # Search facility & select facility and type
+                    search_input = page.locator("[data-testid='input-facility-search']")
+                    await search_input.click(force=True)
+                    await search_input.fill("California")
+                    await page.wait_for_timeout(1000)
+                    await page.click("[data-testid='facility-option-0']", force=True)
+                    await page.wait_for_timeout(500)
+                    
+                    type_select = page.locator("[data-testid='input-facility-type']")
+                    await type_select.click(force=True)
+                    await page.wait_for_timeout(1000)
+                    await page.click("[data-testid*='facility-type-option-']", force=True)
+                    await page.wait_for_timeout(1000)
+                    
+                    # Click next to step 3
+                    await page.click("[data-testid='btn-next']", force=True)
+                    await page.wait_for_timeout(2000)
+                    step3_dom = await extract_dom_layout(page)
+                    
+                    # Merge DOM structures
+                    for key in dom.keys():
+                        dom[key].extend(step1_dom.get(key, []))
+                        dom[key].extend(step2_dom.get(key, []))
+                        dom[key].extend(step3_dom.get(key, []))
+                        
+                    # Re-capture inner text, html and screenshot for evidence reporting
+                    inner_text += "\n" + await body.inner_text(timeout=NAVIGATION_TIMEOUT_MS)
+                    html = await body.evaluate("node => node.innerHTML")
+                    await page.screenshot(path=str(screenshot_path), full_page=True, type="png")
+                    
+                    # Close sheet to clean up
+                    await page.click("[data-testid='sheet-close']", force=True)
+                    await page.wait_for_timeout(500)
+            except Exception as exc:
+                logger.error("Waiver Application overlay wizard interactive actions failed: %s", exc)
+
+        # Custom interactive actions for Support Tickets overlay
+        elif path == "/dashboard/tickets":
+            logger.info("Executing interactive actions for Support Tickets overlay...")
+            try:
+                new_ticket_btn = page.locator("[data-testid='btn-new-ticket']")
+                if await new_ticket_btn.count() > 0:
+                    await new_ticket_btn.click()
+                    await page.wait_for_timeout(1500)
+                    ticket_dom = await extract_dom_layout(page)
+                    
+                    # Merge Ticket DOM structures
+                    for key in dom.keys():
+                        dom[key].extend(ticket_dom.get(key, []))
+                        
+                    # Re-capture inner text, html and screenshot
+                    inner_text += "\n" + await body.inner_text(timeout=NAVIGATION_TIMEOUT_MS)
+                    html = await body.evaluate("node => node.innerHTML")
+                    await page.screenshot(path=str(screenshot_path), full_page=True, type="png")
+                    
+                    # Close ticket drawer
+                    await page.click("[data-testid='sheet-close']", force=True)
+                    await page.wait_for_timeout(500)
+            except Exception as exc:
+                logger.error("Support tickets overlay interactive actions failed: %s", exc)
+
+        html_path.write_text(html, encoding="utf-8")
+ 
         capture = PageCapture(
             target_url=target_url,
             current_url=current_url,

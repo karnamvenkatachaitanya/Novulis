@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const DEFAULT_PATHS = [
+  "/",
+  "/login",
   "/dashboard/my-applications",
   "/dashboard/facilities",
   "/dashboard/action-items",
@@ -12,6 +14,8 @@ const DEFAULT_PATHS = [
   "/dashboard/faqs",
   "/dashboard/tickets",
   "/dashboard/contact",
+  "/privacy",
+  "/terms",
 ];
 
 export default function Home() {
