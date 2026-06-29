@@ -148,38 +148,43 @@ export default function Home() {
     setSimStep("typing-email");
     const email = "admin@gmail.com";
     const pass = "password";
-    let emailIdx = 0;
-    let passIdx = 0;
-
-    // Type email
-    const emailInterval = setInterval(() => {
-      if (emailIdx < email.length) {
-        setSimEmail((prev) => prev + email[emailIdx]);
-        emailIdx++;
-      } else {
-        clearInterval(emailInterval);
-        setSimStep("typing-pass");
-        
-        // Type password
-        const passInterval = setInterval(() => {
-          if (passIdx < pass.length) {
-            setSimPassword((prev) => prev + pass[passIdx]);
-            passIdx++;
-          } else {
-            clearInterval(passInterval);
-            setSimStep("submitting");
-            
-            // Redirect to dashboard
-            setTimeout(() => {
-              setSimStep("dashboard");
-            }, 1500);
-          }
-        }, 100);
+    
+    let active = true;
+    let currentEmail = "";
+    let currentPass = "";
+    
+    const runTyping = async () => {
+      // Type email
+      for (let i = 0; i < email.length; i++) {
+        if (!active) return;
+        currentEmail += email[i];
+        setSimEmail(currentEmail);
+        await new Promise((r) => setTimeout(r, 80));
       }
-    }, 80);
+      
+      if (!active) return;
+      setSimStep("typing-pass");
+      
+      // Type password
+      for (let i = 0; i < pass.length; i++) {
+        if (!active) return;
+        currentPass += pass[i];
+        setSimPassword(currentPass);
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      
+      if (!active) return;
+      setSimStep("submitting");
+      
+      await new Promise((r) => setTimeout(r, 1500));
+      if (!active) return;
+      setSimStep("dashboard");
+    };
+
+    runTyping();
 
     return () => {
-      clearInterval(emailInterval);
+      active = false;
     };
   }, [status]);
 
