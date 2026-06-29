@@ -13,6 +13,7 @@ __pycache__/
 
 # Temporary scratch and debug files
 scratch_*
+scratch/
 retrieved_context/
 captured_states/
 reports/

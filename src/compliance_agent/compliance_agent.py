@@ -106,6 +106,10 @@ Constraint block:
 - Do not invent requirements. Only report discrepancies that are supported by the retrieved guideline rules.
 - IMPORTANT: The retrieved guideline rules are a subset of the manual. If an element (like sidebar navigation links, brand logo, notifications bell, profile avatar, buttons, or shared headers) is present in the DOM but not mentioned in the retrieved guidelines, it is NOT a discrepancy. Do NOT report it as "should not be present".
 - Only report a discrepancy if a retrieved guideline rule explicitly contradicts the observed state in the DOM (e.g. if the guidelines specify a different email address, phone number, address, or business hours than what is observed in the DOM).
+- CRITICAL: "expected_behavior" must be a direct instruction or value explicitly found in the "Retrieved Official Guidelines" text. Do NOT use text from the "Live DOM Layout Matrix" as the "expected_behavior".
+- CRITICAL: If the guidelines do not specify what a particular text/label/header should say, do NOT report it as a discrepancy. If they only specify details for specific elements (like input fields or buttons), only verify those elements.
+- CRITICAL: Do NOT report page flow instructions, transitions, or future states (e.g. "after successful sign-in you are taken to My Applications dashboard", or "Click Login to continue") as current page text/layout discrepancies.
+- CRITICAL: Verify that the text observed in the DOM for `element_selector` matches the text you output in `observed_behavior`. Do not swap selectors or assign incorrect texts to selectors.
 - The `guideline_reference` field must cite the specific section of the PDF guidelines that supports the finding (e.g. "Section 11: Support — Contact").
 - If all elements on the live page comply, output exactly [].
 - Valid severity values are "critical", "high", "medium", and "low".
@@ -310,7 +314,43 @@ def parse_json_array(raw_output: str) -> list[dict[str, Any]]:
     return parsed
 
 
-def validate_findings(findings: list[dict[str, Any]], target_path: str | None = None) -> list[dict[str, str]]:
+def normalize_selector(sel: str) -> str:
+    sel = sel.replace('\\"', '"').replace("'", '"').strip().lower()
+    sel = re.sub(r"\s+", " ", sel)
+    return sel
+
+
+def find_dom_element_text(live_dom: Any, selector: str) -> str | None:
+    if not live_dom:
+        return None
+    
+    dom_data = live_dom
+    if isinstance(live_dom, dict) and "dom" in live_dom:
+        dom_data = live_dom["dom"]
+        
+    if not isinstance(dom_data, dict):
+        return None
+        
+    norm_target = normalize_selector(selector)
+    
+    for group, elements in dom_data.items():
+        if not isinstance(elements, list):
+            continue
+        for elem in elements:
+            if not isinstance(elem, dict):
+                continue
+            elem_selector = normalize_selector(str(elem.get("selector", "")))
+            if elem_selector == norm_target:
+                return str(elem.get("text", ""))
+                
+    return None
+
+
+def validate_findings(
+    findings: list[dict[str, Any]], 
+    target_path: str | None = None,
+    live_dom: Any = None
+) -> list[dict[str, str]]:
     normalized: list[dict[str, str]] = []
     seen_selectors: set[str] = set()
     
@@ -341,6 +381,11 @@ def validate_findings(findings: list[dict[str, Any]], target_path: str | None = 
         if finding["severity"] not in {"critical", "high", "medium", "low"}:
             finding["severity"] = "medium"
 
+        # Try to locate the element in the live DOM to correct the observed behavior text
+        actual_text = find_dom_element_text(live_dom, finding["element_selector"])
+        if actual_text is not None:
+            finding["observed_behavior"] = actual_text
+
         # Drop compliant false positives where expected matches observed (case/non-alphanumeric normalized)
         expected_norm = re.sub(r"[^a-zA-Z0-9]+", "", finding["expected_behavior"]).lower()
         observed_norm = re.sub(r"[^a-zA-Z0-9]+", "", finding["observed_behavior"]).lower()
@@ -370,24 +415,28 @@ def validate_findings(findings: list[dict[str, Any]], target_path: str | None = 
 
 
 def choose_compliance_model(live_dom_payload: Any, retrieved_guidelines_text: str) -> str:
-    """Dynamically route compliance audits to the optimal model.
-    
-    Rules:
-    1. If there are no guideline rules retrieved, bypass the LLM entirely.
-    2. If DOM payload is small (< 12,000 characters), route to Qwen/Qwen2.5-1.5B-Instruct (Low-latency path).
-    3. Otherwise, use Qwen/Qwen2.5-7B-Instruct (High-reasoning path).
-    """
+    """Dynamically route compliance audits to the optimal model based on payload size."""
     if not retrieved_guidelines_text or not retrieved_guidelines_text.strip() or retrieved_guidelines_text.strip() == "[]":
+        logger.info("Routing audit: BYPASS_LLM (No guidelines found)")
         return "BYPASS_LLM"
         
-    dom_str = json.dumps(live_dom_payload) if not isinstance(live_dom_payload, str) else live_dom_payload
+    # Serialize payload to check size
+    try:
+        payload_str = json.dumps(live_dom_payload)
+        payload_len = len(payload_str)
+    except Exception:
+        payload_len = 0
+        
+    logger.info("DOM payload length: %d characters", payload_len)
     
-    if len(dom_str) < 12000:
+    # Check if payload size is small (< 12k chars)
+    if payload_len > 0 and payload_len < 12000:
         logger.info("Routing audit to Qwen/Qwen2.5-1.5B-Instruct (Low-latency path)")
         return "Qwen/Qwen2.5-1.5B-Instruct"
         
     logger.info("Routing audit to Qwen/Qwen2.5-7B-Instruct (High-reasoning path)")
     return "Qwen/Qwen2.5-7B-Instruct"
+
 
 
 def run_compliance_check(
@@ -416,7 +465,7 @@ def run_compliance_check(
 
     for attempt in range(repair_attempts + 1):
         try:
-            return validate_findings(parse_json_array(raw), target_path=target_path)
+            return validate_findings(parse_json_array(raw), target_path=target_path, live_dom=live_dom_json)
         except Exception as exc:
             if attempt >= repair_attempts:
                 raise RuntimeError(f"LLM returned invalid discrepancy JSON: {exc}\nRaw output:\n{raw}") from exc

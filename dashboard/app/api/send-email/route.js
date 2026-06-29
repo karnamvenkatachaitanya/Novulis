@@ -30,7 +30,7 @@ async function loadEnv() {
 
 export async function POST(request) {
   try {
-    const { runId } = await request.json();
+    const { runId, email } = await request.json();
     const env = await loadEnv();
 
     const smtpHost = env.SMTP_HOST;
@@ -38,7 +38,14 @@ export async function POST(request) {
     const smtpUser = env.SMTP_USERNAME;
     const smtpPass = env.SMTP_PASSWORD;
     const alertFrom = env.ALERT_FROM;
-    const alertTo = env.ALERT_TO;
+    const alertTo = email?.trim() || env.ALERT_TO;
+
+    if (!alertTo) {
+      return Response.json(
+        { success: false, error: "Recipient email address is missing. Please enter a valid email address in the input field." },
+        { status: 400 }
+      );
+    }
 
     if (!smtpHost || !smtpUser || !smtpPass) {
       return Response.json(

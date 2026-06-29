@@ -16,6 +16,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import smtplib
 import ssl
 import sys
@@ -421,6 +422,7 @@ DEFAULT_TARGET_PATHS = [
 ]
 RETRIEVAL_DIR = Path("retrieved_context")
 REPORT_DIR = Path("reports")
+CAPTURE_DIR = Path("captured_states")
 DEFAULT_EMAIL = "admin@gmail.com"
 
 logger = logging.getLogger("main")
@@ -494,6 +496,12 @@ def critical_report(
         "inference failed", "scrape failed", "timeout", "network",
     ])
     finding_type = "infrastructure_error" if is_infra_error else "compliance_failure"
+    is_secure = "/dashboard" in target_path
+    expected_behavior = (
+        f"{target_path} should load as an authenticated WaiverPro application page."
+        if is_secure
+        else f"{target_path} should load successfully as a public page."
+    )
     return {
         "target_path": target_path,
         "target_url": target_url,
@@ -504,7 +512,7 @@ def critical_report(
         "findings": [
             {
                 "element_selector": "body",
-                "expected_behavior": f"{target_path} should load as an authenticated WaiverPro application page.",
+                "expected_behavior": expected_behavior,
                 "observed_behavior": f"CRITICAL {finding_type.upper().replace('_', ' ')}: {message}",
                 "severity": "critical",
                 "type": finding_type,
@@ -512,6 +520,7 @@ def critical_report(
             }
         ],
     }
+
 
 
 async def retrieve_guidelines_for_capture(
@@ -957,7 +966,7 @@ def send_smtp_email(message: EmailMessage, use_starttls: bool) -> None:
     context = ssl.create_default_context()
 
     logger.info("Sending SMTP alert through %s:%s", host, port)
-    if use_starttls:
+    if use_starttls or port == 587:
         with smtplib.SMTP(host, port, timeout=300) as server:
             server.ehlo()
             server.starttls(context=context)
@@ -1021,6 +1030,87 @@ async def run_pipeline(args: argparse.Namespace) -> tuple[list[dict[str, Any]], 
         save_baselines(current_baselines)
 
     return reports, attachments, run_id
+
+
+def prune_old_runs(keep_count: int = 3) -> None:
+    """Keep only the last keep_count compliance runs' files, deleting older ones from:
+       - reports/
+       - retrieved_context/
+       - captured_states/
+    """
+    logger.info("Pruning old runs, keeping only the last %d runs...", keep_count)
+    if not REPORT_DIR.exists():
+        return
+
+    # Find all summary-*.json files to identify run IDs
+    summary_files = sorted(
+        [f for f in REPORT_DIR.iterdir() if f.name.startswith("summary-") and f.name.endswith(".json")],
+        key=lambda f: f.name
+    )
+
+    if len(summary_files) <= keep_count:
+        logger.info("Total runs (%d) is <= keep_count (%d). No pruning needed.", len(summary_files), keep_count)
+        return
+
+    # Split into runs to keep and runs to prune
+    files_to_keep = summary_files[-keep_count:]
+
+    # Extract run IDs to keep
+    keep_run_ids = set()
+    for f in files_to_keep:
+        match = re.search(r"summary-(\d{8}-\d{6})\.json", f.name)
+        if match:
+            keep_run_ids.add(match.group(1))
+
+    # The oldest run ID to keep determines the threshold for captured_states files
+    sorted_keep_ids = sorted(list(keep_run_ids))
+    oldest_keep_id = sorted_keep_ids[0] if sorted_keep_ids else ""
+
+    logger.info("Keeping run IDs: %s. Oldest kept run ID threshold: %s", keep_run_ids, oldest_keep_id)
+
+    # 1. Clean up files in reports/
+    for path in REPORT_DIR.iterdir():
+        if not path.is_file():
+            continue
+        match = re.search(r"(\d{8}-\d{6})", path.name)
+        if match:
+            timestamp = match.group(1)
+            if timestamp not in keep_run_ids:
+                try:
+                    path.unlink()
+                    logger.info("Deleted old report file: %s", path.name)
+                except Exception as exc:
+                    logger.warning("Failed to delete %s: %s", path.name, exc)
+
+    # 2. Clean up files in retrieved_context/
+    if RETRIEVAL_DIR.exists():
+        for path in RETRIEVAL_DIR.iterdir():
+            if not path.is_file():
+                continue
+            match = re.search(r"(\d{8}-\d{6})", path.name)
+            if match:
+                timestamp = match.group(1)
+                if timestamp not in keep_run_ids:
+                    try:
+                        path.unlink()
+                        logger.info("Deleted old retrieval file: %s", path.name)
+                    except Exception as exc:
+                        logger.warning("Failed to delete %s: %s", path.name, exc)
+
+    # 3. Clean up files in captured_states/
+    if CAPTURE_DIR.exists() and oldest_keep_id:
+        for path in CAPTURE_DIR.iterdir():
+            if not path.is_file():
+                continue
+            match = re.search(r"(\d{8}-\d{6})", path.name)
+            if match:
+                timestamp = match.group(1)
+                if timestamp < oldest_keep_id:
+                    try:
+                        path.unlink()
+                        logger.info("Deleted old captured state file: %s", path.name)
+                    except Exception as exc:
+                        logger.warning("Failed to delete %s: %s", path.name, exc)
 
 
 def parse_args() -> argparse.Namespace:
@@ -1130,6 +1220,21 @@ async def async_main() -> int:
             attachments.append(pdf_path)
         except Exception as exc:
             logger.exception("Failed to build unified PDF report: %s", exc)
+
+        # Automatically ingest scraped snapshots into Supabase for RAG chatbot
+        try:
+            from .ingest_snapshots import ingest_snapshots
+            audited_paths = [r["target_path"] for r in reports]
+            logger.info("Automatically ingesting snapshots for audited paths: %s", audited_paths)
+            ingest_snapshots(pages=audited_paths)
+        except Exception as exc:
+            logger.warning("Failed to automatically ingest snapshots: %s", exc)
+
+        # Call cleanup function to keep only last 3 runs
+        try:
+            prune_old_runs(keep_count=3)
+        except Exception as exc:
+            logger.warning("Failed to prune old runs: %s", exc)
 
         if not flagged:
             logger.info("No compliance issues found across %d page(s)", len(reports))

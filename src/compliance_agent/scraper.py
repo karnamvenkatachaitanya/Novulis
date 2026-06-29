@@ -346,6 +346,7 @@ async def scrape_page_state(
         
         # Take initial base screenshot
         await page.screenshot(path=str(screenshot_path), full_page=True, type="png")
+        logger.info("Captured page screenshot: %s", screenshot_path.resolve())
 
         # Custom interactive actions for Waiver Application wizard
         parsed_url = urlparse(target_url)
@@ -382,7 +383,17 @@ async def scrape_page_state(
                     
                     # Click next to step 3
                     await page.click("[data-testid='btn-next']", force=True)
-                    await page.wait_for_timeout(2000)
+                    
+                    # Wait for draft saving modal indicator to resolve
+                    try:
+                        saving_indicator = page.locator("text=Saving draft...")
+                        if await saving_indicator.count() > 0:
+                            logger.info("Waiting for 'Saving draft...' indicator overlay to resolve...")
+                            await saving_indicator.wait_for(state="hidden", timeout=12000)
+                    except Exception as e:
+                        logger.warning("Timeout waiting for 'Saving draft...' modal indicator to disappear: %s", e)
+                        
+                    await wait_for_application_idle(page)
                     step3_dom = await extract_dom_layout(page)
                     
                     # Merge DOM structures

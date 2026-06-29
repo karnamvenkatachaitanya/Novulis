@@ -18,6 +18,100 @@ const DEFAULT_PATHS = [
   "/terms",
 ];
 
+const MarkdownRenderer = ({ content, theme }) => {
+  if (!content) return null;
+
+  const lines = content.split("\n");
+  const renderedElements = [];
+  let currentListItems = [];
+
+  const flushList = (key) => {
+    if (currentListItems.length > 0) {
+      renderedElements.push(
+        <ul key={`list-${key}`} className="list-disc pl-5 mb-2 flex flex-col gap-1">
+          {currentListItems.map((item, idx) => (
+            <li key={idx} className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{item}</li>
+          ))}
+        </ul>
+      );
+      currentListItems = [];
+    }
+  };
+
+  const parseInlineMarkdown = (text) => {
+    const boldRegex = /\*\*([^*]+)\*\*/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = boldRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+      parts.push(
+        <strong key={match.index} className="font-bold text-indigo-700 dark:text-indigo-400">
+          {match[1]}
+        </strong>
+      );
+      lastIndex = boldRegex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
+  };
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("#")) {
+      flushList(idx);
+      const level = trimmed.match(/^#+/)[0].length;
+      const headerText = trimmed.replace(/^#+\s*/, "");
+      const parsedText = parseInlineMarkdown(headerText);
+
+      if (level === 1) {
+        renderedElements.push(
+          <h1 key={idx} className="text-base font-extrabold mb-2 mt-3 text-slate-800 dark:text-slate-100">
+            {parsedText}
+          </h1>
+        );
+      } else if (level === 2) {
+        renderedElements.push(
+          <h2 key={idx} className="text-sm font-bold mb-2 mt-3 text-indigo-700 dark:text-indigo-400">
+            {parsedText}
+          </h2>
+        );
+      } else {
+        renderedElements.push(
+          <h3 key={idx} className="text-xs font-bold mb-1 mt-2 text-slate-800 dark:text-slate-200">
+            {parsedText}
+          </h3>
+        );
+      }
+    } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ") || (trimmed.startsWith("+ ") && !trimmed.startsWith("+ New"))) {
+      const itemText = trimmed.replace(/^[-*+]\s*/, "");
+      currentListItems.push(parseInlineMarkdown(itemText));
+    } else if (trimmed === "") {
+      flushList(idx);
+      renderedElements.push(<div key={`spacer-${idx}`} className="h-2" />);
+    } else {
+      flushList(idx);
+      renderedElements.push(
+        <p key={idx} className="text-xs mb-2 text-slate-700 dark:text-slate-300 leading-relaxed">
+          {parseInlineMarkdown(line)}
+        </p>
+      );
+    }
+  });
+
+  flushList(lines.length);
+
+  return <div className="markdown-body">{renderedElements}</div>;
+};
+
 export default function Home() {
   const [selectedPaths, setSelectedPaths] = useState(DEFAULT_PATHS);
   const [status, setStatus] = useState("idle"); // idle | running | success | error
@@ -35,12 +129,20 @@ export default function Home() {
   // Email states
   const [emailStatus, setEmailStatus] = useState("idle"); // idle | sending | success | error
   const [emailMessage, setEmailMessage] = useState("");
+  const [recipientEmail, setRecipientEmail] = useState("");
   const terminalEndRef = useRef(null);
   const terminalContainerRef = useRef(null);
 
   // UI Improvements: Dark mode & Workflow step states
   const [theme, setTheme] = useState("dark");
   const [workflowStep, setWorkflowStep] = useState(0);
+
+  // Chat state
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatMessagesRef = useRef(null);
 
   const WORKFLOW_STEPS = [
     { id: 1, name: "Initialize Sweep", desc: "Validate target scopes" },
@@ -195,15 +297,16 @@ export default function Home() {
 
     // Detect active scraping target
     // Format: 2026-06-25 12:57:02,657 INFO main - Starting audit for /dashboard/faqs
-    const routeMatch = lastLog.match(/Starting audit for\s+(\/dashboard\/[\w-]+)/);
+    const routeMatch = lastLog.match(/Starting audit for\s+(\/[a-zA-Z0-9_/-]*)/);
     if (routeMatch) {
       setActiveRoute(routeMatch[1]);
       setActiveScreenshot(""); // clear previous until new is saved
     }
 
-    // Detect saved page capture screenshot
+    // Detect saved page capture or captured page screenshot
     // Format: 2026-06-25 12:57:09,315 INFO scraper - Saved page capture: C:\...\dashboard_faqs-20260625-125709.json
-    const screenshotMatch = lastLog.match(/Saved page capture:.*\\(dashboard_[\w-]+-[\d-]+-[\d-]+)\.json/);
+    // Or: 2026-06-29 15:20:43,947 INFO scraper - Captured page screenshot: C:\...\dashboard_my-applications-20260629-152032.png
+    const screenshotMatch = lastLog.match(/(?:Saved page capture|Captured page screenshot):.*[\\/]([a-zA-Z0-9_-]+-\d{8}-\d{6})\.(?:json|png)/i);
     if (screenshotMatch) {
       const baseName = screenshotMatch[1]; // e.g. dashboard_faqs-20260625-125709
       setActiveScreenshot(`captured_states/${baseName}.png`);
@@ -261,7 +364,7 @@ export default function Home() {
       const res = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ runId: latestReport.runId }),
+        body: JSON.stringify({ runId: latestReport.runId, email: recipientEmail }),
       });
       const data = await res.json();
       if (data.success) {
@@ -277,12 +380,131 @@ export default function Home() {
     }
   };
 
+  // ── RAG Chatbot Handler ──
+  const handleSendChat = async (messageText) => {
+    const msg = (messageText || chatInput).trim();
+    if (!msg || chatLoading) return;
+
+    // Add user message
+    setChatMessages((prev) => [...prev, { role: "user", content: msg }]);
+    setChatInput("");
+    setChatLoading(true);
+
+    let botText = "";
+    let source = "";
+
+    try {
+      const res = await fetch(`/api/chat?message=${encodeURIComponent(msg)}`);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const text = decoder.decode(value, { stream: true });
+        const lines = text.split("\n");
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (!jsonStr) continue;
+
+          try {
+            const event = JSON.parse(jsonStr);
+
+            if (event.type === "intent") {
+              // We got the intent classification
+              continue;
+            }
+
+            if (event.type === "status") {
+              // Status update — show as temporary text
+              if (!botText) {
+                setChatMessages((prev) => {
+                  const updated = [...prev];
+                  const lastMsg = updated[updated.length - 1];
+                  if (lastMsg && lastMsg.role === "bot") {
+                    lastMsg.content = event.data;
+                  } else {
+                    updated.push({ role: "bot", content: event.data, source: "" });
+                  }
+                  return updated;
+                });
+              }
+              continue;
+            }
+
+            if (event.type === "token") {
+              botText += event.data;
+              setChatMessages((prev) => {
+                const updated = [...prev];
+                const lastMsg = updated[updated.length - 1];
+                if (lastMsg && lastMsg.role === "bot") {
+                  lastMsg.content = botText;
+                } else {
+                  updated.push({ role: "bot", content: botText, source: "" });
+                }
+                return updated;
+              });
+              // Auto-scroll chat
+              if (chatMessagesRef.current) {
+                chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+              }
+            }
+
+            if (event.type === "done") {
+              source = event.source || "";
+              // Update the source badge on the final message
+              setChatMessages((prev) => {
+                const updated = [...prev];
+                const lastMsg = updated[updated.length - 1];
+                if (lastMsg && lastMsg.role === "bot") {
+                  lastMsg.source = source;
+                }
+                return updated;
+              });
+            }
+
+            if (event.type === "error") {
+              const errorText = event.error || "The chatbot could not finish the request.";
+              setChatMessages((prev) => {
+                const updated = [...prev];
+                const lastMsg = updated[updated.length - 1];
+                if (lastMsg && lastMsg.role === "bot") {
+                  lastMsg.content = errorText;
+                  lastMsg.source = "general";
+                } else {
+                  updated.push({ role: "bot", content: errorText, source: "general" });
+                }
+                return updated;
+              });
+              botText = errorText;
+            }
+          } catch {
+            // Skip unparseable lines
+          }
+        }
+      }
+    } catch (err) {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "bot", content: `Error: ${err.message}`, source: "general" },
+      ]);
+    } finally {
+      setChatLoading(false);
+      if (chatMessagesRef.current) {
+        chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-6 flex flex-col justify-between text-slate-800 dark:text-slate-100 transition-colors duration-300">
       {/* 1. Header */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-slate-300 dark:border-slate-800 pb-4 gap-4 w-full">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-650 to-cyan-600 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-700 to-cyan-600 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
             WaiverPro Compliance Dashboard
           </h1>
           <p className="text-sm text-slate-700 dark:text-slate-400 mt-1 font-medium">Real-Time Autonomous QA Agent Controller</p>
@@ -320,7 +542,7 @@ export default function Home() {
                 key={step.id} 
                 className={`p-3 rounded-lg border transition-all duration-300 ${
                   isActive 
-                    ? "bg-indigo-600/10 dark:bg-indigo-500/10 border-indigo-650 dark:border-indigo-500 shadow-md shadow-indigo-500/10 scale-[1.03]" 
+                    ? "bg-indigo-600/10 dark:bg-indigo-500/10 border-indigo-600 dark:border-indigo-500 shadow-md shadow-indigo-500/10 scale-[1.03]" 
                     : isCompleted 
                       ? "bg-emerald-500/5 dark:bg-emerald-500/5 border-emerald-500/40 dark:border-emerald-500/30 opacity-95" 
                       : "bg-white/60 dark:bg-slate-900/40 border-slate-300 dark:border-slate-800 opacity-70"
@@ -329,14 +551,14 @@ export default function Home() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center border ${
                     isActive 
-                      ? "bg-indigo-650 dark:bg-indigo-600 text-white border-indigo-500 animate-pulse" 
+                      ? "bg-indigo-600 dark:bg-indigo-600 text-white border-indigo-500 animate-pulse" 
                       : isCompleted 
-                        ? "bg-emerald-650 dark:bg-emerald-600 text-white border-emerald-500" 
+                        ? "bg-emerald-600 dark:bg-emerald-600 text-white border-emerald-500" 
                         : "bg-slate-300 dark:bg-slate-800 text-slate-800 dark:text-slate-400 border-slate-400 dark:border-slate-700"
                   }`}>
                     {isCompleted ? "✓" : step.id}
                   </span>
-                  <span className={`text-xs font-bold ${isActive ? "text-indigo-850 dark:text-indigo-300" : isCompleted ? "text-emerald-700 dark:text-emerald-400" : "text-slate-800 dark:text-slate-300"}`}>
+                  <span className={`text-xs font-bold ${isActive ? "text-indigo-800 dark:text-indigo-300" : isCompleted ? "text-emerald-700 dark:text-emerald-400" : "text-slate-800 dark:text-slate-300"}`}>
                     {step.name}
                   </span>
                 </div>
@@ -348,7 +570,7 @@ export default function Home() {
           })}
         </div>
       </section>
-      <main className="flex-1 grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         
         {/* Left Column: Controls & Active Logs */}
         <section className="flex flex-col gap-6">
@@ -416,9 +638,9 @@ export default function Home() {
         </section>
 
         {/* Center & Right Column: Browser Simulator & Results */}
-        <section className="xl:col-span-2 flex flex-col gap-6">
+        <section className="lg:col-span-2 flex flex-col gap-6">
             {/* Browser Simulator */}
-          <div className="glass-panel overflow-hidden flex flex-col relative" style={{height: '420px'}}>
+          <div className="glass-panel overflow-hidden flex flex-col relative flex-1 min-h-[500px]">
             {/* Mac Browser Header */}
             <div className="bg-slate-200/90 dark:bg-gray-900/90 px-4 py-2 flex items-center gap-3 border-b border-slate-300 dark:border-gray-800">
               <div className="flex gap-1.5">
@@ -435,7 +657,7 @@ export default function Home() {
             {/* Simulated Frame Content */}
             <div className="flex-1 bg-slate-100 dark:bg-[#10131E] flex flex-col items-center justify-center relative transition-colors duration-300 w-full overflow-hidden">
               {/* Scan Beam animation — sits above the screenshot */}
-              {status === "running" && simStep === "dashboard" && <div className="scan-overlay" style={{zIndex: 10}} />}
+              {status === "running" && simStep === "dashboard" && activeScreenshot && <div className="scan-overlay" style={{zIndex: 10}} />}
  
               {/* Login Simulator view */}
               {simStep !== "dashboard" && simStep !== "idle" && (
@@ -489,21 +711,21 @@ export default function Home() {
  
               {/* Scraping live views with screenshot */}
               {simStep === "dashboard" && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex flex-col">
                   {activeScreenshot ? (
-                    <div className="relative w-full h-full overflow-hidden">
+                    <div className="relative w-full h-full overflow-y-auto scrollbar-thin">
+                      <div className="sticky top-2 left-2 bg-black/80 px-2 py-1 text-[10px] text-emerald-400 font-mono rounded inline-block m-2" style={{zIndex: 11}}>
+                        LIVE SCREENSHOT CAPTURED
+                      </div>
                       <img
                         src={`/api/serve-file?path=${encodeURIComponent(activeScreenshot)}`}
                         alt="Auditing View"
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-auto object-contain object-top -mt-8"
                         style={{position: 'relative', zIndex: 1}}
                       />
-                      <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 text-[10px] text-emerald-400 font-mono rounded" style={{zIndex: 11}}>
-                        LIVE SCREENSHOT CAPTURED
-                      </div>
                     </div>
                   ) : (
-                    <div className="text-center flex flex-col items-center gap-3">
+                    <div className="flex-1 flex flex-col items-center justify-center gap-3">
                       <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
                       <p className="text-xs text-slate-500 dark:text-gray-400 font-mono">
                         Navigated to <code>{activeRoute}</code>. Extracting styling layout matrices...
@@ -611,15 +833,25 @@ export default function Home() {
                 </div>
  
                 <div className="flex flex-col gap-3 p-3 bg-slate-50 dark:bg-gray-900/60 rounded-lg border border-slate-200 dark:border-slate-800">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row gap-2 justify-between sm:items-center">
                     <span className="text-xs text-slate-500 dark:text-gray-400 font-mono">Attachment: <code>{latestReport.pdfPath.split(/[\\/]/).pop()}</code></span>
-                    <button
-                      onClick={triggerEmailAlert}
-                      disabled={emailStatus === "sending"}
-                      className="btn-primary text-xs py-2 px-4"
-                    >
-                      {emailStatus === "sending" ? "Sending Email..." : "Send Report via Email"}
-                    </button>
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        id="email-input"
+                        placeholder="Recipient Email (optional)"
+                        value={recipientEmail}
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                        className="text-xs px-3 py-1.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48"
+                      />
+                      <button
+                        onClick={triggerEmailAlert}
+                        disabled={emailStatus === "sending"}
+                        className="btn-primary text-xs py-2 px-4 whitespace-nowrap"
+                      >
+                        {emailStatus === "sending" ? "Sending..." : "Send Email"}
+                      </button>
+                    </div>
                   </div>
  
                   {emailStatus !== "idle" && (
@@ -651,6 +883,202 @@ export default function Home() {
       <footer className="text-center text-xs text-slate-500 dark:text-gray-500 border-t border-slate-200 dark:border-slate-800 pt-4">
         WaiverPro Compliance Operations Center &copy; 2026. Made with Next.js & ReportLab.
       </footer>
+
+      {/* 6. Chat Toggle Button */}
+      <button
+        onClick={() => setChatOpen(!chatOpen)}
+        title="Open RAG Chatbot"
+        style={{
+          position: 'fixed', bottom: 20, right: 24, zIndex: 51,
+          width: 52, height: 52, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #6366F1, #06B6D4)',
+          color: 'white', border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 22, boxShadow: '0 6px 24px rgba(99,102,241,0.4)',
+          transition: 'all 0.2s ease',
+        }}
+      >
+        {chatOpen ? "✕" : "💬"}
+      </button>
+
+      {/* 7. Chat Panel */}
+      <div style={{
+        position: 'fixed', bottom: 85, right: 24, zIndex: 50,
+        width: 380, maxWidth: '95vw', height: 540, maxHeight: '75vh',
+        display: 'flex', flexDirection: 'column',
+        background: theme === 'dark' ? 'rgba(31,41,55,0.95)' : 'rgba(255,255,255,0.97)',
+        backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+        border: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.45)'}`,
+        borderRadius: '16px',
+        boxShadow: theme === 'dark' ? '0 12px 40px rgba(0,0,0,0.5)' : '0 12px 40px rgba(0,0,0,0.12)',
+        transform: chatOpen ? 'translateY(0)' : 'translateY(120%)',
+        opacity: chatOpen ? 1 : 0,
+        pointerEvents: chatOpen ? 'auto' : 'none',
+        transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease',
+      }}>
+        {/* Chat Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '14px 16px',
+          borderBottom: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.35)'}`,
+          background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.08))',
+          borderRadius: '16px 16px 0 0',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 20 }}>🤖</span>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: theme === 'dark' ? '#818cf8' : '#4338ca' }}>WaiverPro Assistant</div>
+              <div style={{ fontSize: 10, color: theme === 'dark' ? '#9ca3af' : '#64748b' }}>RAG-powered compliance chatbot</div>
+            </div>
+          </div>
+          <button
+            onClick={() => setChatOpen(false)}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 18, color: theme === 'dark' ? '#9ca3af' : '#94a3b8',
+              padding: 4, lineHeight: 1,
+            }}
+          >✕</button>
+        </div>
+
+        {/* Chat Messages */}
+        <div ref={chatMessagesRef} style={{
+          flex: 1, overflowY: 'auto', padding: '14px 16px',
+          display: 'flex', flexDirection: 'column', gap: 10,
+        }}>
+          {chatMessages.length === 0 && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '32px 0' }}>
+              <span style={{ fontSize: 32 }}>💡</span>
+              <p style={{ fontSize: 12, color: theme === 'dark' ? '#9ca3af' : '#64748b', textAlign: 'center', lineHeight: 1.6, maxWidth: 260 }}>
+                Ask me about the current dashboard state, compliance guidelines, or tell me to scrape specific pages.
+              </p>
+            </div>
+          )}
+          {chatMessages.map((msg, idx) => (
+            <div key={idx} style={{ display: 'flex', flexDirection: 'column' }}>
+              {msg.role === "user" ? (
+                <div style={{
+                  alignSelf: 'flex-end', maxWidth: '82%',
+                  padding: '10px 14px', borderRadius: '14px 14px 4px 14px',
+                  background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
+                  color: 'white', fontSize: 13, lineHeight: 1.5, wordBreak: 'break-word',
+                }}>{msg.content}</div>
+              ) : (
+                <div style={{
+                  alignSelf: 'flex-start', maxWidth: '82%',
+                  padding: '10px 14px', borderRadius: '14px 14px 14px 4px',
+                  background: theme === 'dark' ? '#111827' : '#ffffff',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.35)'}`,
+                  color: theme === 'dark' ? '#f9fafb' : '#0f172a',
+                  fontSize: 13, lineHeight: 1.5, wordBreak: 'break-word',
+                }}>
+                  {msg.source && (
+                    <div style={{
+                      display: 'inline-block', padding: '2px 8px', borderRadius: 9999,
+                      fontSize: 10, fontWeight: 600, marginBottom: 6,
+                      background: msg.source === 'live_data' ? 'rgba(16,185,129,0.15)' :
+                                  msg.source === 'guidelines' ? 'rgba(99,102,241,0.15)' :
+                                  msg.source === 'action' ? 'rgba(245,158,11,0.15)' : 'rgba(148,163,184,0.15)',
+                      color: msg.source === 'live_data' ? '#10B981' :
+                             msg.source === 'guidelines' ? '#6366F1' :
+                             msg.source === 'action' ? '#F59E0B' : '#94A3B8',
+                      border: `1px solid ${
+                        msg.source === 'live_data' ? 'rgba(16,185,129,0.3)' :
+                        msg.source === 'guidelines' ? 'rgba(99,102,241,0.3)' :
+                        msg.source === 'action' ? 'rgba(245,158,11,0.3)' : 'rgba(148,163,184,0.3)'
+                      }`,
+                    }}>
+                      {msg.source === 'live_data' ? '📊 Live Data' :
+                       msg.source === 'guidelines' ? '📖 Guidelines' :
+                       msg.source === 'action' ? '⚡ Action' : '💬 General'}
+                    </div>
+                  )}
+                  <MarkdownRenderer content={msg.content} theme={theme} />
+                </div>
+              )}
+            </div>
+          ))}
+          {chatLoading && (
+            <div style={{
+              alignSelf: 'flex-start', padding: '12px 16px', borderRadius: '14px 14px 14px 4px',
+              background: theme === 'dark' ? '#111827' : '#ffffff',
+              border: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.35)'}`,
+            }}>
+              <div className="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+          )}
+        </div>
+
+        {/* Quick Suggestion Chips */}
+        {chatMessages.length === 0 && !chatLoading && (
+          <div style={{
+            display: 'flex', flexWrap: 'wrap', gap: 6, padding: '8px 16px',
+            borderTop: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.35)'}`,
+          }}>
+            {[
+              "What tickets are open?",
+              "Scrape /dashboard/tickets",
+              "What should /login display?",
+              "Show compliance status",
+            ].map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => { setChatInput(suggestion); handleSendChat(suggestion); }}
+                style={{
+                  padding: '5px 12px', borderRadius: 9999, fontSize: 11, fontWeight: 500,
+                  cursor: 'pointer',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.4)'}`,
+                  background: theme === 'dark' ? '#111827' : '#ffffff',
+                  color: theme === 'dark' ? '#9ca3af' : '#334155',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Chat Input Bar */}
+        <div style={{
+          display: 'flex', gap: 8, padding: '12px 16px',
+          borderTop: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.35)'}`,
+        }}>
+          <input
+            type="text"
+            placeholder="Ask about the dashboard..."
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !chatLoading && chatInput.trim()) {
+                handleSendChat(chatInput);
+              }
+            }}
+            disabled={chatLoading}
+            style={{
+              flex: 1, padding: '10px 14px', borderRadius: 10,
+              border: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.4)'}`,
+              background: theme === 'dark' ? '#1f2937' : '#ffffff',
+              color: theme === 'dark' ? '#f9fafb' : '#0f172a',
+              fontSize: 13, outline: 'none',
+            }}
+          />
+          <button
+            onClick={() => handleSendChat(chatInput)}
+            disabled={chatLoading || !chatInput.trim()}
+            style={{
+              padding: '10px 16px', borderRadius: 10,
+              background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
+              color: 'white', border: 'none', fontWeight: 600, fontSize: 13,
+              cursor: chatLoading || !chatInput.trim() ? 'not-allowed' : 'pointer',
+              opacity: chatLoading || !chatInput.trim() ? 0.5 : 1,
+              whiteSpace: 'nowrap', transition: 'all 0.2s ease',
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
