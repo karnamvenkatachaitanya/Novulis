@@ -368,6 +368,27 @@ def validate_findings(findings: list[dict[str, Any]], target_path: str | None = 
     return normalized
 
 
+def choose_compliance_model(live_dom_payload: Any, retrieved_guidelines_text: str) -> str:
+    """Dynamically route compliance audits to the optimal model.
+    
+    Rules:
+    1. If there are no guideline rules retrieved, bypass the LLM entirely.
+    2. If DOM payload is small (< 12,000 characters), route to Qwen/Qwen2.5-1.5B-Instruct (Low-latency path).
+    3. Otherwise, use Qwen/Qwen2.5-7B-Instruct (High-reasoning path).
+    """
+    if not retrieved_guidelines_text or not retrieved_guidelines_text.strip() or retrieved_guidelines_text.strip() == "[]":
+        return "BYPASS_LLM"
+        
+    dom_str = json.dumps(live_dom_payload) if not isinstance(live_dom_payload, str) else live_dom_payload
+    
+    if len(dom_str) < 12000:
+        logger.info("Routing audit to Qwen/Qwen2.5-1.5B-Instruct (Low-latency path)")
+        return "Qwen/Qwen2.5-1.5B-Instruct"
+        
+    logger.info("Routing audit to Qwen/Qwen2.5-7B-Instruct (High-reasoning path)")
+    return "Qwen/Qwen2.5-7B-Instruct"
+
+
 def run_compliance_check(
     target_path: str,
     live_dom_json: Any,

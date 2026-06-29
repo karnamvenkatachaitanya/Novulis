@@ -34,7 +34,7 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, KeepTogether, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
-from .compliance_agent import run_compliance_check
+from .compliance_agent import run_compliance_check, choose_compliance_model
 from .github_client import create_github_issue
 from .retrieval_engine import retrieve_matching_rules
 from .scraper import AUTH_STATE_PATH, PageCapture, absolute_url, login_and_save_state, scrape_page_state
@@ -601,18 +601,27 @@ async def audit_target_path(browser: Any, base_url: str, target_path: str, run_i
         attachments.append(report_path)
         return report, attachments
 
+    selected_model = args.compliance_model
+    # Dynamic routing matches model size to rule size and complexity
+    if args.compliance_model == os.environ.get("COMPLIANCE_MODEL", "Qwen/Qwen2.5-7B-Instruct"):
+        selected_model = choose_compliance_model(capture_payload, guidelines_to_text(guidelines))
+
     try:
-        findings = await asyncio.to_thread(
-            run_compliance_check,
-            target_path,
-            capture_payload,
-            guidelines_to_text(guidelines),
-            None,
-            model_name=args.compliance_model,
-            max_new_tokens=args.max_new_tokens,
-            temperature=args.temperature,
-            repair_attempts=args.repair_attempts,
-        )
+        if selected_model == "BYPASS_LLM":
+            logger.info("Bypassing LLM compliance check for %s: No RAG guideline rules retrieved.", target_path)
+            findings = []
+        else:
+            findings = await asyncio.to_thread(
+                run_compliance_check,
+                target_path,
+                capture_payload,
+                guidelines_to_text(guidelines),
+                None,
+                model_name=selected_model,
+                max_new_tokens=args.max_new_tokens,
+                temperature=args.temperature,
+                repair_attempts=args.repair_attempts,
+            )
         # Merge compliance findings and visual style regressions
         findings.extend(visual_findings)
         report = {
