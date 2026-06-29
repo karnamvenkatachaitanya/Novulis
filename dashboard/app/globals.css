@@ -3,21 +3,21 @@
 @import "tailwindcss";
 
 :root {
-  --background-app: #F8FAFC;
-  --background-card: rgba(255, 255, 255, 0.75);
-  --border-light: rgba(226, 232, 240, 0.8);
+  --background-app: #F1F5F9;
+  --background-card: rgba(255, 255, 255, 0.92);
+  --border-light: rgba(148, 163, 184, 0.45);
   --text-main: #0F172A;
-  --text-muted: #64748B;
+  --text-muted: #334155;
   --primary-glow: #4F46E5;
   --secondary-glow: #0891B2;
   --background-panel: #FFFFFF;
   --text-inverse: #FFFFFF;
   
   /* Status Colors */
-  --status-critical: #EF4444;
-  --status-high: #F97316;
-  --status-medium: #F59E0B;
-  --status-low: #10B981;
+  --status-critical: #DC2626;
+  --status-high: #EA580C;
+  --status-medium: #D97706;
+  --status-low: #059669;
 }
 
 .dark {

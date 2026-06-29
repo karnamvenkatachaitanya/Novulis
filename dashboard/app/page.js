@@ -269,25 +269,25 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen p-6 flex flex-col justify-between bg-slate-50 dark:bg-[#0B0F19] text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen p-6 flex flex-col justify-between text-slate-800 dark:text-slate-100 transition-colors duration-300">
       {/* 1. Header */}
-      <header className="flex justify-between items-center mb-6 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <header className="flex justify-between items-center mb-6 border-b border-slate-300 dark:border-slate-800 pb-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 to-cyan-500 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-650 to-cyan-600 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent">
             WaiverPro Compliance Dashboard
           </h1>
-          <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">Real-Time Autonomous QA Agent Controller</p>
+          <p className="text-sm text-slate-700 dark:text-slate-400 mt-1 font-medium">Real-Time Autonomous QA Agent Controller</p>
         </div>
         <div className="flex gap-4 items-center">
           {/* Light/Dark Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg bg-slate-200/80 hover:bg-slate-300/80 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 transition-all cursor-pointer shadow-sm text-sm"
+            className="p-2 rounded-lg bg-slate-200/90 hover:bg-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-350 dark:border-slate-700 transition-all cursor-pointer shadow-sm text-sm font-semibold"
             title="Toggle theme mode"
           >
             {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
           </button>
-          <span className="text-xs text-slate-500 dark:text-gray-500 font-mono">Agent Status:</span>
+          <span className="text-xs text-slate-700 dark:text-gray-500 font-mono font-bold">Agent Status:</span>
           {status === "idle" && <span className="badge badge-low">Idle</span>}
           {status === "running" && <span className="badge badge-high animate-pulse">Running Sweeps</span>}
           {status === "success" && <span className="badge badge-low">Audit Complete</span>}
@@ -297,7 +297,7 @@ export default function Home() {
 
       {/* 2. Visual Workflow Progress Indicator */}
       <section className="glass-panel p-6 mb-6">
-        <h3 className="text-xs font-bold tracking-wider text-slate-500 dark:text-gray-400 font-mono uppercase mb-4">
+        <h3 className="text-xs font-bold tracking-wider text-slate-800 dark:text-gray-400 font-mono uppercase mb-4">
           Agent Operational Workflow Sequence
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -309,27 +309,27 @@ export default function Home() {
                 key={step.id} 
                 className={`p-3 rounded-lg border transition-all duration-300 ${
                   isActive 
-                    ? "bg-indigo-500/10 border-indigo-500 shadow-md shadow-indigo-500/10 scale-[1.03]" 
+                    ? "bg-indigo-600/10 dark:bg-indigo-500/10 border-indigo-650 dark:border-indigo-500 shadow-md shadow-indigo-500/10 scale-[1.03]" 
                     : isCompleted 
-                      ? "bg-emerald-500/5 dark:bg-emerald-500/5 border-emerald-500/30 opacity-90" 
-                      : "bg-slate-100/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-60"
+                      ? "bg-emerald-500/5 dark:bg-emerald-500/5 border-emerald-500/40 dark:border-emerald-500/30 opacity-95" 
+                      : "bg-white/60 dark:bg-slate-900/40 border-slate-300 dark:border-slate-800 opacity-70"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center border ${
                     isActive 
-                      ? "bg-indigo-600 text-white border-indigo-500 animate-pulse" 
+                      ? "bg-indigo-650 dark:bg-indigo-600 text-white border-indigo-500 animate-pulse" 
                       : isCompleted 
-                        ? "bg-emerald-600 text-white border-emerald-500" 
-                        : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-350 dark:border-slate-700"
+                        ? "bg-emerald-650 dark:bg-emerald-600 text-white border-emerald-500" 
+                        : "bg-slate-300 dark:bg-slate-800 text-slate-800 dark:text-slate-400 border-slate-400 dark:border-slate-700"
                   }`}>
                     {isCompleted ? "✓" : step.id}
                   </span>
-                  <span className={`text-xs font-semibold ${isActive ? "text-indigo-600 dark:text-indigo-400" : isCompleted ? "text-emerald-600 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300"}`}>
+                  <span className={`text-xs font-bold ${isActive ? "text-indigo-850 dark:text-indigo-300" : isCompleted ? "text-emerald-700 dark:text-emerald-400" : "text-slate-800 dark:text-slate-300"}`}>
                     {step.name}
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-gray-400 leading-tight">
+                <p className="text-[10px] text-slate-700 dark:text-gray-400 leading-tight font-medium">
                   {step.desc}
                 </p>
               </div>
