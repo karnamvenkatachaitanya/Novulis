@@ -279,7 +279,8 @@ def call_hf_inference(
                 max_tokens=max_new_tokens,
                 temperature=max(temperature, 0.01),
             )
-            return response.choices[0].message.content.strip()
+            content = response.choices[0].message.content
+            return content.strip() if content is not None else ""
         except Exception as exc:
             if attempt == 3:
                 raise RuntimeError(f"Hugging Face inference failed after 3 attempts: {exc}") from exc
@@ -324,7 +325,7 @@ def validate_findings(findings: list[dict[str, Any]], target_path: str | None = 
         if not isinstance(item, dict):
             raise RuntimeError(f"Finding {index} is not a JSON object.")
 
-        normalized_item = {str(key).lower().replace("-", "_"): value for key, value in item.items()}
+        normalized_item = {key.lower().replace("-", "_"): value for key, value in item.items() if isinstance(key, str)}
         finding = {
             "element_selector": str(normalized_item.get("element_selector", "")).strip(),
             "expected_behavior": str(normalized_item.get("expected_behavior", "")).strip(),

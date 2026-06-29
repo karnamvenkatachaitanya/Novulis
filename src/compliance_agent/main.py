@@ -645,7 +645,9 @@ async def audit_target_path(browser: Any, base_url: str, target_path: str, run_i
     report_path = REPORT_DIR / f"{safe_path_name(target_path)}-{run_id}-compliance.json"
     save_json(report_path, report)
     attachments.append(report_path)
-    logger.info("Completed audit for %s with %d finding(s)", target_path, len(report.get("findings", [])))
+    findings_list = report.get("findings")
+    findings_len = len(findings_list) if isinstance(findings_list, list) else 0
+    logger.info("Completed audit for %s with %d finding(s)", target_path, findings_len)
     return report, attachments
 
 
