@@ -95,18 +95,29 @@ def get_supabase_client() -> Client:
     return create_client(supabase_url, supabase_key)
 
 
+_MODEL_CACHE: dict[str, SentenceTransformer] = {}
+
+
+def get_sentence_transformer(model_name: str) -> SentenceTransformer:
+    global _MODEL_CACHE
+    if model_name not in _MODEL_CACHE:
+        logger.info("Loading embedding model: %s", model_name)
+        _MODEL_CACHE[model_name] = SentenceTransformer(model_name)
+    return _MODEL_CACHE[model_name]
+
+
 def embed_text(text: str, model_name: str = DEFAULT_MODEL) -> list[float]:
     cleaned = normalize_text(text)
     if not cleaned:
         raise ValueError("Cannot embed empty page text.")
 
-    logger.info("Loading embedding model: %s", model_name)
-    model = SentenceTransformer(model_name)
+    model = get_sentence_transformer(model_name)
     embedding = model.encode(cleaned, normalize_embeddings=True, show_progress_bar=False)
     vector = [float(value) for value in embedding.tolist()]
 
-    if len(vector) != 384:
-        raise RuntimeError(f"Expected 384-dimensional embedding, got {len(vector)} dimensions.")
+    expected_dim = model.get_sentence_embedding_dimension()
+    if len(vector) != expected_dim:
+        raise RuntimeError(f"Expected {expected_dim}-dimensional embedding, got {len(vector)} dimensions.")
 
     return vector
 
@@ -147,10 +158,19 @@ def retrieve_matching_rules(
     }
 
     logger.info("Calling Supabase RPC '%s' for filter_url_path=%s", rpc_name, target_url_path or "*")
-    try:
-        response = supabase.rpc(rpc_name, params).execute()
-    except Exception as exc:
-        raise RuntimeError(f"Supabase RPC '{rpc_name}' failed: {exc}") from exc
+    
+    # Secure connection retry loop for Supabase RPC calls
+    import time as _time
+    for attempt in range(1, 4):
+        try:
+            response = supabase.rpc(rpc_name, params).execute()
+            break
+        except Exception as exc:
+            if attempt == 3:
+                raise RuntimeError(f"Supabase RPC '{rpc_name}' failed after 3 attempts: {exc}") from exc
+            wait_sec = 2 ** attempt
+            logger.warning("Supabase connection attempt %s failed; retrying in %ss: %s", attempt, wait_sec, exc)
+            _time.sleep(wait_sec)
 
     rows = response.data or []
     rules: list[RetrievedRule] = []

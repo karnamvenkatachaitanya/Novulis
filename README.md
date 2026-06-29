@@ -99,9 +99,11 @@ python main.py --similarity-threshold 0.0 --smtp-starttls --verbose
 ---
 
 ## 📐 Design Decisions & Trade-offs
-- **Hybrid Similarity Filtering**: The `match_guidelines` RPC filters chunks strictly matching the active page's `url_path` before checking cosine similarity, ensuring the AI only reviews guidelines written for that specific page.
-- **Serverless HF Inference API**: Switched local Mistral 7B loading to Hugging Face Serverless Router running `Qwen/Qwen2.5-7B-Instruct`. This prevents heavy local memory allocation and runs efficiently in seconds on CPU-only machines.
-- **STARTTLS with Increased Mail Timeout**: Increased mail client timeout to `300` seconds to guarantee heavy emails (containing 9 high-resolution PNG screenshot attachments, total ~10MB) send cleanly without getting dropped.
+
+- **Playwright Scraper (Selected)**: Playwright was chosen over Selenium and Puppeteer for its superior state caching (native context storage for `auth_state.json`), reliable async scheduling, and robust selector-based element visibility checks.
+- **Supabase Vector DB (Selected)**: Chosen over Pinecone or FAISS for the advantage of pgvector being directly integrated within a PostgreSQL engine, allowing combined SQL filtering (matching `url_path`) and HNSW vector calculations in a single query transaction.
+- **Serverless HF Inference API (Selected)**: Replaced local Mistral-7B execution with serverless Hugging Face endpoints running `Qwen/Qwen2.5-7B-Instruct` to guarantee reliable operation on resources-constrained hardware, avoiding OOM (Out Of Memory) states and local GPU requirements.
+- **STARTTLS with Increased Mail Timeout**: Set timeout to `300` seconds to guarantee transmission of emails containing visual page evidence attachments (e.g. unified PDF report) without blocking thread contexts.
 
 ---
 

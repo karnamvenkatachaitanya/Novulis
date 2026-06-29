@@ -25,7 +25,9 @@ export default function FacilitiesTable({ facilities }) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Location</th>
+            <th>Type</th>
+            <th>License Number</th>
+            <th>License Exp Date</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -33,7 +35,9 @@ export default function FacilitiesTable({ facilities }) {
           {facilities && facilities.map(f => (
             <tr key={f.id}>
               <td>{f.name}</td>
-              <td>{f.location}</td>
+              <td>{f.type}</td>
+              <td>{f.licenseNumber}</td>
+              <td>{f.licenseExpDate}</td>
               <td>{f.status}</td>
             </tr>
           ))}

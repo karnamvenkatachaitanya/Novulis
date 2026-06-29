@@ -87,10 +87,30 @@ async def wait_for_application_idle(page: Page) -> None:
 
     try:
         await page.wait_for_load_state("networkidle", timeout=NAVIGATION_TIMEOUT_MS)
+        logger.debug("Reached networkidle state at %s", page.url)
     except PlaywrightTimeoutError:
         logger.warning("Network never reached idle at %s; continuing after timeout", page.url)
 
-    await page.wait_for_timeout(POST_LOAD_SETTLE_MS)
+    # Smart-waiting: Wait for loading spinners/placeholders to disappear
+    try:
+        loader_selectors = [
+            ".loading", ".spinner", ".loader", "[data-testid*='loader']", 
+            "[data-testid*='spinner']", ".skeleton", ".animate-pulse"
+        ]
+        for selector in loader_selectors:
+            loc = page.locator(selector)
+            if await loc.count() > 0:
+                logger.info("Waiting for loading placeholder '%s' to resolve...", selector)
+                try:
+                    await loc.first.wait_for(state="hidden", timeout=3000)
+                except PlaywrightTimeoutError:
+                    logger.warning("Timeout waiting for placeholder '%s' to resolve, proceeding", selector)
+    except Exception as exc:
+        logger.debug("Error during smart-waiting: %s", exc)
+
+    # Mandatory safe render delay
+    await page.wait_for_timeout(3000)
+
 
 
 async def login_and_save_state(
@@ -141,11 +161,18 @@ async def login_and_save_state(
 
 async def extract_dom_layout(page: Page) -> dict[str, list[dict[str, Any]]]:
     raw = await page.evaluate(
-        """
+        r"""
         () => {
           const nodes = Array.from(document.querySelectorAll(
-            'button, a, input, textarea, select, label, [role], h1, h2, h3, h4, h5, h6, p, span'
-          ));
+            'button, a, input, textarea, select, label, [role], h1, h2, h3, h4, h5, h6, p, span, div, li, td'
+          )).filter(node => {
+            const tag = node.tagName.toLowerCase();
+            if (['div', 'li', 'td'].includes(tag)) {
+              const hasMatchChild = node.querySelector('button, a, input, textarea, select, label, h1, h2, h3, h4, h5, h6, p, span, div, li, td');
+              return !hasMatchChild && (node.innerText || node.textContent || '').trim().length > 0;
+            }
+            return true;
+          });
           const textFor = (node) => (node.innerText || node.textContent || '').replace(/\\s+/g, ' ').trim();
           const attrsFor = (node) => {
             const out = {};
@@ -174,7 +201,45 @@ async def extract_dom_layout(page: Page) -> dict[str, list[dict[str, Any]]]:
             if (name) return `${node.tagName.toLowerCase()}[name="${name}"]`;
             const aria = node.getAttribute('aria-label');
             if (aria) return `${node.tagName.toLowerCase()}[aria-label="${aria}"]`;
-            return node.tagName.toLowerCase();
+            
+            const path = [];
+            let current = node;
+            while (current && current.nodeType === Node.ELEMENT_NODE) {
+              const tag = current.tagName.toLowerCase();
+              if (current.id) {
+                path.unshift(`#${current.id}`);
+                break;
+              }
+              const currentTestid = current.getAttribute('data-testid');
+              if (currentTestid) {
+                path.unshift(`[data-testid="${currentTestid}"]`);
+                break;
+              }
+              
+              let selector = tag;
+              if (current.className && typeof current.className === 'string') {
+                const classes = current.className.trim().split(/\s+/).filter(c => c && !c.includes(':')).join('.');
+                if (classes) {
+                  selector = `${tag}.${classes}`;
+                }
+              }
+              
+              if (current.parentNode) {
+                const siblings = Array.from(current.parentNode.children);
+                const sameTagSiblings = siblings.filter(s => s.tagName === current.tagName);
+                if (sameTagSiblings.length > 1) {
+                  const idx = sameTagSiblings.indexOf(current) + 1;
+                  selector += `:nth-of-type(${idx})`;
+                }
+              }
+              
+              path.unshift(selector);
+              current = current.parentNode;
+              if (current && current.tagName.toLowerCase() === 'body') {
+                break;
+              }
+            }
+            return path.join(' > ');
           };
           return nodes.map((node) => {
             const rect = node.getBoundingClientRect();
@@ -195,7 +260,15 @@ async def extract_dom_layout(page: Page) -> dict[str, list[dict[str, Any]]]:
                 width: Math.round(rect.width),
                 height: Math.round(rect.height)
               } : null,
-              visible
+              visible,
+              styles: {
+                backgroundColor: style.backgroundColor,
+                color: style.color,
+                borderStyle: style.borderStyle,
+                borderWidth: style.borderWidth,
+                borderColor: style.borderColor,
+                borderVisible: style.borderStyle !== 'none' && parseFloat(style.borderWidth || '0') > 0
+              }
             };
           }).filter((item) => item.visible && (item.text || Object.keys(item.attributes).length));
         }
@@ -297,7 +370,7 @@ async def scrape_page_state(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Cache auth state or scrape a page using saved auth.")
     parser.add_argument("--base-url", default=os.environ.get("APP_BASE_URL"))
-    parser.add_argument("--username", default=os.environ.get("APP_LOGIN_EMAIL", "m@example.com"))
+    parser.add_argument("--username", default=os.environ.get("APP_LOGIN_EMAIL", "admin@gmail.com"))
     parser.add_argument("--password", default=os.environ.get("APP_LOGIN_PASSWORD"))
     parser.add_argument("--target-url", help="Full target URL to scrape after auth state exists.")
     parser.add_argument("--login", action="store_true", help="Only refresh auth_state.json.")

@@ -26,21 +26,88 @@ except ImportError:  # pragma: no cover
 
 
 DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
-MAX_DOM_CHARS = 18_000
+MAX_DOM_CHARS = 35_000
 MAX_GUIDELINE_CHARS = 18_000
 MAX_NEW_TOKENS = 1_200
 
 logger = logging.getLogger("compliance_agent")
 
 
+# Known page data-testid markers used to detect cross-page DOM bleeding
+PAGE_TESTID_MARKERS = {
+    "/dashboard/my-applications": "page-my-applications",
+    "/dashboard/facilities": "page-facilities",
+    "/dashboard/action-items": "page-action-items",
+    "/dashboard/user-management": "page-user-management",
+    "/dashboard/announcements": "page-announcements",
+    "/dashboard/settings": "page-settings",
+    "/dashboard/faqs": "page-faqs",
+    "/dashboard/tickets": "page-tickets",
+    "/dashboard/contact": "page-contact",
+}
+
+
+def filter_dom_for_target_page(live_dom: Any, target_path: str) -> Any:
+    """Remove DOM elements that belong to OTHER pages (cross-page contamination guard).
+    
+    If the live app renders shared layout with multiple page-specific containers,
+    we strip elements whose selectors contain data-testid markers for pages
+    other than the current audit target.
+    """
+    foreign_markers = []
+    for path, marker in PAGE_TESTID_MARKERS.items():
+        if path != target_path:
+            foreign_markers.append(marker)
+    
+    if not foreign_markers:
+        return live_dom
+    
+    def is_foreign_element(elem: dict) -> bool:
+        selector = str(elem.get("selector", ""))
+        for marker in foreign_markers:
+            if marker in selector:
+                return True
+        return False
+    
+    if isinstance(live_dom, dict) and "dom" in live_dom:
+        filtered_dom = {}
+        dom_data = live_dom["dom"]
+        if isinstance(dom_data, dict):
+            for group, elements in dom_data.items():
+                if isinstance(elements, list):
+                    filtered_dom[group] = [e for e in elements if not is_foreign_element(e)]
+                else:
+                    filtered_dom[group] = elements
+        result = dict(live_dom)
+        result["dom"] = filtered_dom
+        return result
+    
+    if isinstance(live_dom, dict):
+        filtered = {}
+        for group, elements in live_dom.items():
+            if isinstance(elements, list):
+                filtered[group] = [e for e in elements if not is_foreign_element(e)]
+            else:
+                filtered[group] = elements
+        return filtered
+    
+    return live_dom
+
+
 SYSTEM_PROMPT = """You are a strict WaiverPro documentation compliance judge.
 
 Constraint block:
 - Compare the Live DOM layout structure against the official PDF guideline rules for this specific path.
-- Output findings strictly as a valid, parsable JSON array of objects with keys: `element_selector`, `expected_behavior`, `observed_behavior`, and `severity`.
+- Output findings strictly as a valid, parsable JSON array of objects with keys: `element_selector`, `expected_behavior`, `observed_behavior`, `severity`, and `guideline_reference`.
 - Do not wrap the output in markdown text wrappers or include pleasantries.
+- CRITICAL: Only report elements that deviate or fail to match the guideline rules. If a component complies, or if its actual behavior matches the expected behavior, do NOT include it in the findings.
+- CRITICAL: The `element_selector` must be the exact unique CSS selector of the text/element containing the mismatched value (e.g. `div.text-sm.text-muted-foreground:nth-of-type(2)`). Do NOT return general classes (like `.font-medium`) or selectors of unrelated/nearby elements (like form input fields such as `#email` or `#subject`) if the discrepancy is in the static text element itself.
+- CRITICAL: Only report discrepancies for elements that belong to the specific target page path being audited. Do NOT report elements from other pages (e.g., do not report Contact page issues when auditing the Settings page).
 - Do not invent requirements. Only report discrepancies that are supported by the retrieved guideline rules.
-- If the live page complies, output exactly [].
+- IMPORTANT: The retrieved guideline rules are a subset of the manual. If an element (like sidebar navigation links, brand logo, notifications bell, profile avatar, buttons, or shared headers) is present in the DOM but not mentioned in the retrieved guidelines, it is NOT a discrepancy. Do NOT report it as "should not be present".
+- Only report a discrepancy if a retrieved guideline rule explicitly contradicts the observed state in the DOM (e.g. if the guidelines specify a different email address, phone number, address, or business hours than what is observed in the DOM).
+- The `guideline_reference` field must cite the specific section of the PDF guidelines that supports the finding (e.g. "Section 11: Support — Contact").
+- If all elements on the live page comply, output exactly [].
 - Valid severity values are "critical", "high", "medium", and "low".
 """
 
@@ -60,6 +127,7 @@ Return only a JSON array. Each object must contain exactly:
 - expected_behavior
 - observed_behavior
 - severity
+- guideline_reference (e.g. "Section 7: Facilities")
 """
 
 
@@ -80,6 +148,40 @@ def configure_logging(verbose: bool) -> None:
 
 
 def compact(value: Any, max_chars: int) -> str:
+    # Safe object truncation to prevent broken JSON strings
+    if isinstance(value, (dict, list)):
+        try:
+            serialized = json.dumps(value, indent=2, ensure_ascii=False)
+            if len(serialized) <= max_chars:
+                return serialized
+            
+            # Truncate elements for lists
+            if isinstance(value, list):
+                truncated_list = []
+                current_size = 2
+                for item in value:
+                    item_str = json.dumps(item, ensure_ascii=False)
+                    if current_size + len(item_str) + 2 > max_chars:
+                        break
+                    truncated_list.append(item)
+                    current_size += len(item_str) + 2
+                return json.dumps(truncated_list + ["... (truncated)"], indent=2, ensure_ascii=False)
+                
+            # Truncate elements for dicts
+            if isinstance(value, dict):
+                truncated_dict = {}
+                current_size = 2
+                for k, v in value.items():
+                    item_str = json.dumps({k: v}, ensure_ascii=False)
+                    if current_size + len(item_str) + 2 > max_chars:
+                        break
+                    truncated_dict[k] = v
+                    current_size += len(item_str) + 2
+                truncated_dict["_truncated"] = "..."
+                return json.dumps(truncated_dict, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+
     if not isinstance(value, str):
         value = json.dumps(value, indent=2, ensure_ascii=False)
     value = re.sub(r"\s+", " ", value).strip()
@@ -103,11 +205,53 @@ def static_scrape_failure_report(target_path: str, scrape_error_flag: str) -> li
     ]
 
 
+def clean_dom_for_llm(live_dom: Any) -> Any:
+    if not isinstance(live_dom, dict):
+        return live_dom
+    
+    # If this is the outer PageCapture dict
+    if "dom" in live_dom:
+        dom_data = live_dom["dom"]
+        cleaned = {
+            "title": live_dom.get("title"),
+            "current_url": live_dom.get("current_url"),
+            "dom": clean_dom_for_llm(dom_data)
+        }
+        return cleaned
+        
+    # If this is the raw group-based DOM
+    cleaned_groups = {}
+    for group, elements in live_dom.items():
+        if isinstance(elements, list):
+            cleaned_elements = []
+            for elem in elements:
+                if isinstance(elem, dict):
+                    cleaned_elem = {
+                        "role": elem.get("role"),
+                        "tag": elem.get("tag"),
+                        "text": elem.get("text"),
+                        "selector": elem.get("selector"),
+                    }
+                    attrs = elem.get("attributes")
+                    if attrs:
+                        cleaned_elem["attributes"] = attrs
+                    cleaned_elements.append(cleaned_elem)
+                else:
+                    cleaned_elements.append(elem)
+            cleaned_groups[group] = cleaned_elements
+        else:
+            cleaned_groups[group] = elements
+    return cleaned_groups
+
+
 def build_messages(target_path: str, live_dom_json: Any, retrieved_guidelines_text: str) -> list[dict[str, str]]:
+    # Filter out DOM elements that belong to other pages to prevent cross-page contamination
+    filtered_dom = filter_dom_for_target_page(live_dom_json, target_path)
+    cleaned_dom = clean_dom_for_llm(filtered_dom)
     prompt = USER_PROMPT_TEMPLATE.format(
         target_path=target_path,
         retrieved_guidelines_text=compact(retrieved_guidelines_text, MAX_GUIDELINE_CHARS),
-        live_dom_json=compact(live_dom_json, MAX_DOM_CHARS),
+        live_dom_json=compact(cleaned_dom, MAX_DOM_CHARS),
     )
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -165,8 +309,17 @@ def parse_json_array(raw_output: str) -> list[dict[str, Any]]:
     return parsed
 
 
-def validate_findings(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
+def validate_findings(findings: list[dict[str, Any]], target_path: str | None = None) -> list[dict[str, str]]:
     normalized: list[dict[str, str]] = []
+    seen_selectors: set[str] = set()
+    
+    # Build list of foreign page markers for cross-page deduplication
+    foreign_markers = []
+    if target_path:
+        for path, marker in PAGE_TESTID_MARKERS.items():
+            if path != target_path:
+                foreign_markers.append(marker)
+    
     for index, item in enumerate(findings):
         if not isinstance(item, dict):
             raise RuntimeError(f"Finding {index} is not a JSON object.")
@@ -177,13 +330,40 @@ def validate_findings(findings: list[dict[str, Any]]) -> list[dict[str, str]]:
             "expected_behavior": str(normalized_item.get("expected_behavior", "")).strip(),
             "observed_behavior": str(normalized_item.get("observed_behavior", "")).strip(),
             "severity": str(normalized_item.get("severity", "medium")).strip().lower(),
+            "guideline_reference": str(normalized_item.get("guideline_reference", "")).strip(),
         }
 
-        missing = [key for key, value in finding.items() if not value]
+        required_keys = ["element_selector", "expected_behavior", "observed_behavior"]
+        missing = [key for key in required_keys if not finding[key]]
         if missing:
             raise RuntimeError(f"Finding {index} is missing required values: {missing}")
         if finding["severity"] not in {"critical", "high", "medium", "low"}:
             finding["severity"] = "medium"
+
+        # Drop compliant false positives where expected matches observed (case/non-alphanumeric normalized)
+        expected_norm = re.sub(r"[^a-zA-Z0-9]+", "", finding["expected_behavior"]).lower()
+        observed_norm = re.sub(r"[^a-zA-Z0-9]+", "", finding["observed_behavior"]).lower()
+        if expected_norm == observed_norm:
+            logger.info("Dropping compliant false positive finding: selector=%s, expected=%s", finding["element_selector"], finding["expected_behavior"])
+            continue
+
+        # Drop findings whose selectors reference elements from OTHER pages (cross-page contamination)
+        selector = finding["element_selector"]
+        is_foreign = False
+        for marker in foreign_markers:
+            if marker in selector:
+                logger.info("Dropping cross-page contaminated finding: selector=%s contains foreign marker '%s' (target_path=%s)", selector, marker, target_path)
+                is_foreign = True
+                break
+        if is_foreign:
+            continue
+
+        # Deduplicate by selector (keep first occurrence)
+        if selector in seen_selectors:
+            logger.info("Dropping duplicate finding for selector=%s", selector)
+            continue
+        seen_selectors.add(selector)
+
         normalized.append(finding)
     return normalized
 
@@ -214,7 +394,7 @@ def run_compliance_check(
 
     for attempt in range(repair_attempts + 1):
         try:
-            return validate_findings(parse_json_array(raw))
+            return validate_findings(parse_json_array(raw), target_path=target_path)
         except Exception as exc:
             if attempt >= repair_attempts:
                 raise RuntimeError(f"LLM returned invalid discrepancy JSON: {exc}\nRaw output:\n{raw}") from exc

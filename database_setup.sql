@@ -45,7 +45,7 @@ BEGIN
     FROM
         guideline_embeddings ge
     WHERE
-        ge.url_path = filter_url_path
+        (ge.url_path = filter_url_path OR ge.url_path = '/shared')
         AND (1 - (ge.embedding <=> query_embedding)) >= similarity_threshold
     ORDER BY
         ge.embedding <=> query_embedding ASC
