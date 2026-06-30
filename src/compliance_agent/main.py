@@ -614,10 +614,8 @@ async def audit_target_path(browser: Any, base_url: str, target_path: str, run_i
         attachments.append(report_path)
         return report, attachments
 
-    selected_model = args.compliance_model
-    # Dynamic routing matches model size to rule size and complexity
-    if args.compliance_model == os.environ.get("COMPLIANCE_MODEL", "Qwen/Qwen2.5-7B-Instruct"):
-        selected_model = choose_compliance_model(capture_payload, guidelines_to_text(guidelines))
+    # Dynamic routing: picks the optimal model based on DOM payload complexity
+    selected_model = choose_compliance_model(capture_payload, guidelines_to_text(guidelines))
 
     try:
         if selected_model == "BYPASS_LLM":

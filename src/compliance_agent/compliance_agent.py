@@ -263,6 +263,9 @@ def build_messages(target_path: str, live_dom_json: Any, retrieved_guidelines_te
     ]
 
 
+FALLBACK_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+
+
 def call_hf_inference(
     messages: list[dict[str, str]],
     *,
@@ -275,24 +278,45 @@ def call_hf_inference(
         raise RuntimeError("Missing HF_TOKEN for Hugging Face Serverless Inference API.")
 
     client = InferenceClient(token=token)
-    for attempt in range(1, 4):
-        try:
-            response = client.chat_completion(
-                model=model_name,
-                messages=messages,
-                max_tokens=max_new_tokens,
-                temperature=max(temperature, 0.01),
-            )
-            content = response.choices[0].message.content
-            return content.strip() if content is not None else ""
-        except Exception as exc:
-            if attempt == 3:
-                raise RuntimeError(f"Hugging Face inference failed after 3 attempts: {exc}") from exc
-            wait_seconds = 2**attempt
-            logger.warning("HF inference attempt %s failed; retrying in %ss: %s", attempt, wait_seconds, exc)
-            time.sleep(wait_seconds)
 
-    raise RuntimeError("Unexpected Hugging Face inference failure.")
+    def _try_model(name: str) -> str | None:
+        """Attempt inference with a specific model. Returns response or None on model_not_supported."""
+        for attempt in range(1, 4):
+            try:
+                response = client.chat_completion(
+                    model=name,
+                    messages=messages,
+                    max_tokens=max_new_tokens,
+                    temperature=max(temperature, 0.01),
+                )
+                content = response.choices[0].message.content
+                return content.strip() if content is not None else ""
+            except Exception as exc:
+                err_str = str(exc)
+                # If the model is not supported, bail out immediately so we can fallback
+                if "model_not_supported" in err_str or "not supported" in err_str.lower():
+                    logger.warning("Model '%s' is not supported on this HF account: %s", name, err_str[:120])
+                    return None
+                if attempt == 3:
+                    raise RuntimeError(f"Hugging Face inference failed after 3 attempts with model '{name}': {exc}") from exc
+                wait_seconds = 2 ** attempt
+                logger.warning("HF inference attempt %s with '%s' failed; retrying in %ss: %s", attempt, name, wait_seconds, exc)
+                time.sleep(wait_seconds)
+        return None
+
+    # Try the requested model first
+    result = _try_model(model_name)
+    if result is not None:
+        return result
+
+    # Fallback to the guaranteed-supported model
+    if model_name != FALLBACK_MODEL:
+        logger.warning("Falling back from '%s' to '%s'", model_name, FALLBACK_MODEL)
+        result = _try_model(FALLBACK_MODEL)
+        if result is not None:
+            return result
+
+    raise RuntimeError(f"Hugging Face inference failed: both '{model_name}' and fallback '{FALLBACK_MODEL}' failed.")
 
 
 def parse_json_array(raw_output: str) -> list[dict[str, Any]]:
@@ -414,8 +438,17 @@ def validate_findings(
     return normalized
 
 
+# Verified supported models on HF Serverless Inference API
+MODEL_LOW_COMPLEXITY = "Qwen/Qwen2.5-Coder-7B-Instruct"   # Faster for small/structured pages
+MODEL_HIGH_COMPLEXITY = "Qwen/Qwen2.5-7B-Instruct"         # Better reasoning for large pages
+
+
 def choose_compliance_model(live_dom_payload: Any, retrieved_guidelines_text: str) -> str:
-    """Dynamically route compliance audits to the optimal model based on payload size."""
+    """Dynamically route compliance audits to the optimal model based on payload complexity.
+    
+    Both models have been verified as supported on HF Serverless Inference API.
+    Even if a model becomes unsupported, call_hf_inference has automatic fallback.
+    """
     if not retrieved_guidelines_text or not retrieved_guidelines_text.strip() or retrieved_guidelines_text.strip() == "[]":
         logger.info("Routing audit: BYPASS_LLM (No guidelines found)")
         return "BYPASS_LLM"
@@ -429,14 +462,13 @@ def choose_compliance_model(live_dom_payload: Any, retrieved_guidelines_text: st
         
     logger.info("DOM payload length: %d characters", payload_len)
     
-    # Respect the COMPLIANCE_MODEL from environment if specified
-    env_model = os.environ.get("COMPLIANCE_MODEL")
-    if env_model:
-        logger.info("Routing audit to configured COMPLIANCE_MODEL: %s", env_model)
-        return env_model
+    # Route based on complexity: small payloads -> Coder-7B, large payloads -> 7B
+    if payload_len > 0 and payload_len < 12000:
+        logger.info("Routing audit to %s (low-complexity path, %d chars)", MODEL_LOW_COMPLEXITY, payload_len)
+        return MODEL_LOW_COMPLEXITY
         
-    logger.info("Routing audit to default Qwen/Qwen2.5-7B-Instruct")
-    return "Qwen/Qwen2.5-7B-Instruct"
+    logger.info("Routing audit to %s (high-complexity path, %d chars)", MODEL_HIGH_COMPLEXITY, payload_len)
+    return MODEL_HIGH_COMPLEXITY
 
 
 
