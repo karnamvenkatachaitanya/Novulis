@@ -11,22 +11,22 @@ RUN apt-get update && apt-get install -y \
     python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user with UID 1000 (required by Hugging Face Spaces)
-RUN useradd -m -u 1000 user && chown -R user:user /app
-USER user
-ENV PATH="/home/user/.local/bin:$PATH"
+# The base image already has a user 'pwuser' with UID 1000. Change ownership of /app and switch to it:
+RUN chown -R pwuser:pwuser /app
+USER pwuser
+ENV PATH="/home/pwuser/.local/bin:$PATH"
 
 # Copy python dependencies and install them
-COPY --chown=user requirements.txt ./
+COPY --chown=pwuser requirements.txt ./
 RUN pip3 install --no-cache-dir --user -r requirements.txt
 
 # Copy the rest of the backend files
-COPY --chown=user main.py auto_healer.py ingest_guidelines.py database_setup.sql ./
-COPY --chown=user src/ ./src/
-COPY --chown=user visual_baselines.json ./
+COPY --chown=pwuser main.py auto_healer.py ingest_guidelines.py database_setup.sql ./
+COPY --chown=pwuser src/ ./src/
+COPY --chown=pwuser visual_baselines.json ./
 
 # Copy the Next.js dashboard
-COPY --chown=user dashboard/ ./dashboard/
+COPY --chown=pwuser dashboard/ ./dashboard/
 
 # Build the Next.js app
 WORKDIR /app/dashboard
