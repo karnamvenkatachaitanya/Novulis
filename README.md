@@ -265,15 +265,15 @@ python -m unittest tests/test_compliance.py
 
 ## 📐 Open-Source Models & Task Routing Decisions
 
-To guarantee data privacy, eliminate vendor lock-in, and enable low-cost self-hosting, the WaiverPro system relies exclusively on **state-of-the-art open-source (open-weights) models**:
+To guarantee data privacy, eliminate vendor lock-in, and enable low-cost self-hosting, the WaiverPro system relies exclusively on **state-of-the-art open-source (open-weights) models** hosted on Hugging Face Serverless Inference:
 
 ### 1. Selected Open-Source Models
-*   **`Qwen/Qwen2.5-7B-Instruct`**: The primary reasoning engine. It handles high-complexity tasks like compliance auditing of dense HTML structures and semantic intent classification.
-*   **`Qwen/Qwen2.5-1.5B-Instruct`**: A lightweight model used for rapid processing of small layout nodes, keeping latencies under 500ms.
-*   **`sentence-transformers/all-MiniLM-L6-v2`**: A fast, 384-dimensional dense vector embedding model running locally or via Hugging Face Serverless APIs.
+*   **`Qwen/Qwen2.5-7B-Instruct`**: The primary reasoning engine. It handles high-complexity tasks like compliance auditing of dense HTML structures (DOM size >= 12k characters) and semantic intent classification.
+*   **`Qwen/Qwen2.5-Coder-7B-Instruct`**: A specialized code-optimized model used for low-complexity layout sweeps (DOM size < 12k characters) to speed up analysis.
+*   **`sentence-transformers/all-MiniLM-L6-v2`**: A fast, 384-dimensional dense vector embedding model running via Hugging Face Serverless APIs (with local CPU fallback).
 
 ### 2. Task Handling & Model Routing Architecture
-Rather than executing all requests on a heavy model, the orchestrator implements a **Dynamic Task Routing** mechanism to balance processing speed and evaluation depth:
+Rather than executing all requests on a heavy model, the orchestrator implements a **Dynamic Task Routing & Fallback** mechanism to balance processing speed and evaluation depth:
 
 ```
          [User Query / DOM Input]
@@ -295,8 +295,33 @@ Rather than executing all requests on a heavy model, the orchestrator implements
                          ▼                ▼
                      [< 12k chars]   [> 12k chars]
                          │                │
-                   (Qwen-1.5B Route) (Qwen-7B Route)
-                   *Rapid execution  *Deep reasoning
+                   (Coder-7B Route)  (Qwen-7B Route)
+                   *Rapid structured *Deep reasoning
+                         │                │
+                         └───────┬────────┘
+                                 │
+                                 ▼
+                     [HF Inference Request]
+                                 │
+                     ┌───────────┴───────────┐
+                     ▼                       ▼
+                [Success]             [Model Not Supported]
+                     │                       │
+             (Return Findings)               ▼
+                                     [Automatic Fallback]
+                                     *Retries using default 7B
 ```
 
-This multi-model routing structure ensures that each task is handled by the most efficient open-source model tier, reducing token footprint by up to **60%** and latency by up to **80%**.
+This multi-model routing structure ensures that each task is handled by the most efficient open-source model tier, reducing token footprint by up to **60%** and latency by up to **80%**, while safeguarding against serverless endpoint support changes via automatic 7B fallback.
+
+---
+
+## ☁️ Hugging Face Spaces Deployment
+
+WaiverPro is fully optimized for cloud deployment as a Docker container on Hugging Face Spaces:
+
+1. **Non-Root Execution (UID 1000)**: Switch directly to the pre-existing Playwright `pwuser` (UID 1000) inside the Jammy base image, with correct workspace write permissions.
+2. **Pinned Playwright Binary**: Pinned `playwright==1.40.0` in `requirements.txt` to align exactly with the pre-installed web browsers of the base container image.
+3. **Dynamic Port Routing**: Exposes port `7860` as required by HF Spaces environment routing.
+4. **Cross-Platform Execution**: Dashboard spawner routes correctly between `python` (Windows local dev) and `python3` (Docker Linux).
+5. **Secure SSE Stream Management**: Prevents double-closing SSE event stream controllers on child process termination.
