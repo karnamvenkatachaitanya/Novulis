@@ -437,11 +437,8 @@ def choose_compliance_model(live_dom_payload: Any, retrieved_guidelines_text: st
         if low_latency_model:
             logger.info("Routing audit to low-latency model: %s", low_latency_model)
             return low_latency_model
-        if env_model:
-            logger.info("Low-latency path: falling back to configured COMPLIANCE_MODEL: %s", env_model)
-            return env_model
-        logger.info("Routing audit to Qwen/Qwen2.5-1.5B-Instruct (Low-latency path)")
-        return "Qwen/Qwen2.5-1.5B-Instruct"
+        logger.info("Routing audit to Qwen/Qwen2.5-3B-Instruct (Low-latency path)")
+        return "Qwen/Qwen2.5-3B-Instruct"
         
     if env_model:
         logger.info("Routing audit to configured COMPLIANCE_MODEL: %s", env_model)
