@@ -338,8 +338,9 @@ WaiverPro is fully optimized for cloud deployment as a Docker container on Huggi
 
 ## 🔮 What to Improve Next
 
-1. **Visual Diff Highlights on Screenshots**: Crop and highlight coordinates of mismatched DOM components on captured screenshots, inserting visual bounding boxes automatically before compiling the PDF report.
-2. **Real-time Slack / Discord Integration**: Dispatch warning notifications and visual discrepancies directly to team collaboration channels via standard webhook integration.
-3. **Automatic Healing Verification (Auto-Healer)**: Expand the auto-healer agent loop to not only alert but automatically suggest visual styling corrections for CSS regressions.
-4. **Persistent Blob Storage (AWS S3 / Supabase Storage)**: Upload generated PDF reports and full-page screenshots to persistent cloud storage so they are preserved across container rebuilds.
+1. **Real-time Voice-Enabled Assistance**: Integration of voice recognition and synthesis directly on the live control dashboard to let operators command sweeps and query the chatbot hands-free.
+2. **Real-time Slack & Target Alerts with Webhook Integration**: Instantly route categorized layout warnings and visual logs to team chatrooms or operational target systems.
+3. **Automated Scheduled Audits**: Deploy a persistent time-loop cron agent that automatically triggers scan checks at regular target intervals (e.g. nightly) and alerts on regressions.
+4. **AWS Deployment & Domain Hosting via Cloudflare Proxy**: Transfer the application to AWS ECS/Fargate container hosting and configure domain mappings through a Cloudflare secure proxy for maximum caching and SSL resilience.
+
 
