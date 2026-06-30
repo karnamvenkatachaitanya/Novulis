@@ -1,137 +1,136 @@
 # WaiverPro Compliance Automation Suite & RAG Monitoring Dashboard
 
+🔗 **Live App on Hugging Face Spaces**: [https://venkatachaitanya-waiverpro-task.hf.space/](https://venkatachaitanya-waiverpro-task.hf.space/)
+
 A production-ready, enterprise-grade compliance auditing agent and monitoring dashboard. The suite automatically verifies if a live web application layout and behavior conform to its official design and compliance guidelines. 
 
 The system ingests regulatory guideline PDFs, indexes them into a vector database (Supabase pgvector), crawls the live web portal using a headless browser, retrieves relevant rules via RAG, audits layouts for discrepancies using an LLM compliance judge, and sends secure SMTP email alerts with styled HTML summaries, screenshots, and visual PDF reports. It also features a Next.js control center with an integrated RAG chatbot to query dashboard status and compliance guidelines.
 
 ---
 
-## 🗺️ Core Architecture & Data Flow
+## 🗺️ Core Architecture (Simplified in 2 Parts)
+
+To make the system easy to understand, we split it into two main parts: the **Compliance Auditing Engine** and the **RAG Chatbot Engine**.
+
+### Part 1: Compliance Auditing Engine (How We Scan & Verify the UI)
+This part runs the automated scan of the dashboard pages, checks them against the rules, and reports any issues.
 
 ```mermaid
-flowchart TB
-    subgraph Storage Layer [Supabase Cloud Database]
-        db_guide[(guideline_embeddings)]
-        db_snap[(dashboard_snapshots)]
-    end
-
-    subgraph Python Compliance Agent [Scrape & Audit Engine]
-        sc[scraper.py - Playwright] -->|1. Authenticated Dom Layout & Screenshot| dom[Live DOM & Screenshots]
-        main[main.py - Orchestrator] -->|2. Search Relevant Guidelines| ret[retrieval_engine.py]
-        ret -->|pgvector RPC Search| db_guide
-        dom -->|3. Feed DOM Layout & Retrieved Rules| judge[compliance_agent.py - LLM Judge]
-        judge -->|4. Generate Visual Discrepancies JSON| main
-        main -->|5. Compile Visual ReportLab PDF| pdf[Unified compliance-report.pdf]
-        main -->|6. Ingest DOM snapshot into DB| db_snap
-    end
-
-    subgraph Next.js Monitoring Dashboard [Operator Portal]
-        ui[page.js - Interactive UI]
-        api_run[api/run-agent] -->|Trigger Compliance Sweep| main
-        api_chat[api/chat] -->|Query Guidelines & Live Snapshot| bot[chatbot.py - RAG Router]
-        bot -->|Hybrid Search| db_guide
-        bot -->|Hybrid Search| db_snap
-        api_mail[api/send-email] -->|Secure SMTP Dispatch| smtp[SMTP Mail Server]
-    end
-
-    pdf -->|Attachment Link| ui
-    pdf -->|Attached visual PDF alert| smtp
-    smtp -->|Unified Alert| user[Stakeholder Mailbox]
+flowchart TD
+    A[1. Next.js UI / api/run-agent] -->|Triggers Scan| B(2. Python main.py Orchestrator)
+    B -->|Launches Browser| C[3. scraper.py - Playwright]
+    C -->|Captures DOM & Screenshots| D[4. Live Web Portal]
+    B -->|Search Page Rules| E[5. retrieval_engine.py]
+    E -->|RPC pgvector Search| F[(Supabase: guideline_embeddings)]
+    B -->|Sends DOM + Retrieved Rules| G[6. compliance_agent.py - LLM Judge]
+    G -->|Identifies Discrepancies| B
+    B -->|Compiles PDF Report| H[7. ReportLab PDF Compiler]
+    B -->|Sends Email Alert + PDF| I[8. SMTP Mail Server]
+    B -->|Saves Scraped DOM Data| J[(Supabase: dashboard_snapshots)]
 ```
 
----
-
-## 🌟 Key Subsystem Features
-
-The WaiverPro suite is built with performance optimizations, reliability mechanisms, and strict safety guardrails:
-
-*   **Next.js Operator Dashboard**: A dark-mode glassmorphic control center for triggering sweeps, viewing visual discrepancy logs, inspecting compiled PDF reports, inputting custom email recipients, and chatting with the RAG agent.
-*   **Dual-Engine RAG Chatbot**: Features a hybrid local-LLM intent router (`chatbot.py`) that classifies queries across `GENERAL`, `QUERY_CURRENT`, `QUERY_GUIDELINES`, `ACTION_SCRAPE`, and `OFF_TOPIC` categories.
-*   **Dynamic Model Routing**: Routes LLM compliance audits based on DOM footprint size:
-    *   *Bypass Route*: Skips LLM calls if RAG retrieves zero matching rules for the active page, saving computational budget.
-    *   *Low-Latency Route (`Qwen2.5-1.5B`)*: Processes smaller page states (< 12k characters) for rapid sweeps.
-    *   *High-Reasoning Route (`Qwen2.5-7B`)*: Routes complex layout states to Qwen-7B-Instruct.
-*   **Closed-Loop Code Self-Healing Engine**: Automatically parses compliance issues (e.g. from GitHub Issues or local sweeps), utilizes an LLM to generate code repair patches (`auto_healer.py`), runs visual verification tests (`AUTO_HEALER_TEST_COMMAND`), and safely commits repaired files.
-*   **Hybrid Search Linear Rank Fusion**: Combines vector cosine similarity (70%), exact keyword indices (15%), and path metadata matching (15%) within `retrieval_engine.py` to maximize retrieval recall.
-*   **Multi-Step State-Merging Crawlers**: Playwright scraper controllers (`scraper.py`) interactively navigate form wizards and drawers (such as Waiver Applications or Support Tickets), merging separate steps into a single unified layout snapshot for full-flow audits.
-*   **Explainable Compliance Citations**: Enforces the extraction of standard PDF guideline references (`guideline_reference`) inside compliance judge reports.
-*   **Operational Error Separation**: Distinguishes between pipeline, authentication redirection, and API rate limit failures from actual compliance violations, marking them as `infrastructure_error`.
-*   **SMTP Alert Cooldown Idempotency**: Suppresses alert email floods by caching run history in `.last_sent_alert.json` and skipping duplicate reports within a 1-hour window.
-*   **Global Model Weight Caching**: Caches model weights dynamically inside a global memory dictionary (`_MODEL_CACHE`) to avoid loading embedding models per-page.
+**Step-by-Step Flow:**
+1. **Trigger**: The operator clicks "Run Compliance Sweep" on the Next.js frontend, which calls `api/run-agent`.
+2. **Scrape**: The Python script (`scraper.py`) uses **Playwright** to open a headless browser, log in to the WaiverPro portal, and capture the page's HTML structure (DOM) and screenshot.
+3. **Retrieval (RAG)**: The system searches the **Supabase** database for official layout rules belonging to that page.
+4. **LLM Evaluation**: The compliance agent (`compliance_agent.py`) sends the scraped HTML and official rules to the **Hugging Face Qwen LLM**, which behaves like a judge and reports any layout discrepancies.
+5. **Reporting**: The system compiles a PDF report using **ReportLab** and dispatches an email alert with the PDF attachment via **SMTP**.
+6. **Logging**: The scraped snapshot is saved to Supabase so the chatbot can read it later.
 
 ---
 
-## 🔄 RAG Chatbot Sequence Data Flow
-
-This sequence diagram illustrates the decision tree, API boundary calls, and token flow sequences triggered when a client submits a message to the WaiverPro chatbot:
+### Part 2: RAG Chatbot Engine (How We Answer User Questions)
+This part processes user questions in the chat widget, searches the database, and streams the answer back.
 
 ```mermaid
+flowchart TD
+    User[User Type Question] -->|api/chat| A(1. Python chatbot.py Router)
+    A -->|Classify Intent| B{Is it Off-Topic or Greeting?}
+    B -->|Yes| C[2. Fast Return / Welcome]
+    B -->|No: Asking about Guidelines or Live Data| D[3. Embed Query - MiniLM]
+    D -->|Query Vectors| E[(Supabase DB)]
+    E -->|Returns matching text chunks| F[4. Construct Prompt with Context]
+    F -->|Sends to Qwen-7B LLM| G[5. Stream Response]
+    G -->|Server Sent Events SSE| User
+```
+
+**Step-by-Step Flow:**
+1. **Input**: The user types a question (e.g., *"What is WaiverPro?"* or *"What tickets are open?"*).
+2. **Intent Classification**: The chatbot checks if it is off-topic or a friendly greeting. If so, it answers instantly.
+3. **Semantic Embedding**: If it is a real question, the text is converted into a list of numbers (embeddings) using `all-MiniLM-L6-v2`.
+4. **Database Search**: The chatbot searches **Supabase** for matching guideline text chunks or live page snapshots.
+5. **Answer Generation**: The chatbot feeds these matching text chunks as context to the **Qwen LLM** and instructs it to formulate an answer *only* using that context.
+6. **Streaming**: The response tokens are sent back to the Next.js UI using **SSE (Server-Sent Events)**, so the user sees the answer printing in real time.
+
+---
+
+## 🔄 Sequence Data Flow Diagrams
+
+Here is how data flows between different services step-by-step for both processes.
+
+### 1. Compliance Sweep Sequence Flow
+```mermaid
 sequenceDiagram
-    actor User
-    participant UI as Chat Widget
-    participant API as Next.js API Route
+    actor Admin as Operator (Dashboard UI)
+    participant API as Next.js API (run-agent)
+    participant main as Python main.py Orchestrator
+    participant Scrape as Playwright Scraper
+    participant DB as Supabase DB
+    participant LLM as Hugging Face LLM
+    participant SMTP as SMTP Mail Server
+
+    Admin->>API: Click "Run Compliance Sweep"
+    API->>main: Spawn Python sweep process
+    main->>Scrape: Navigate & Scrape page layout
+    Scrape-->>main: Return HTML DOM + Screenshot
+    main->>DB: Query rules for this page (pgvector search)
+    DB-->>main: Return page guidelines
+    main->>LLM: Send HTML DOM + Page Guidelines to Qwen
+    LLM-->>main: Return discrepancies (JSON format)
+    main->>main: Build visual PDF report (ReportLab)
+    main->>DB: Insert scraped DOM snapshot into dashboard_snapshots
+    main->>SMTP: Send SMTP email alert with PDF report attached
+    SMTP-->>Admin: Deliver email alert to Stakeholder mailbox
+    main-->>API: Return final status
+    API-->>Admin: Show compliance results on dashboard UI
+```
+
+### 2. Chatbot Q&A Sequence Flow
+```mermaid
+sequenceDiagram
+    actor User as Chat User
+    participant UI as Chat Widget UI
+    participant API as Next.js API (api/chat)
     participant Chat as Python chatbot.py
-    participant DB as Supabase pgvector
+    participant DB as Supabase DB
     participant LLM as Hugging Face LLM
 
-    User->>UI: Submit query ("What are the login rules?")
-    UI->>API: GET /api/chat?message=query
-    API->>API: Check cached queries
-    alt Cache Hit
-        API-->>UI: Return cached stream events
-    else Cache Miss
-        API->>Chat: Spawn python -u -c chatbot.py "query"
-        
-        Note over Chat: Intent Recognition
-        alt Fast-Path (Greeting / Keywords)
-            Chat->>Chat: Match intent locally (GENERAL / OFF_TOPIC)
-        else Deep-Path (Complex query)
-            Chat->>LLM: Classify query via Qwen
-            LLM-->>Chat: Return {"intent", "page_path"}
-        end
-
-        %% Off topic Routing
-        alt Intent = OFF_TOPIC
-            Chat-->>API: Yield OFF_TOPIC_REFUSAL
-            API-->>UI: Stream Refusal
-        
-        %% General Greeting Routing
-        else Intent = GENERAL
-            Chat->>LLM: Greet friendly via Qwen (Relaxed prompt)
-            LLM-->>Chat: Return welcoming intro message
-            Chat-->>API: Yield greeting tokens
-            API-->>UI: Stream greeting HTML
-        
-        %% Scrape Trigger Routing
-        else Intent = ACTION_SCRAPE
-            Chat->>Chat: Spawn main.py (Playwright crawler)
-            Note over Chat: Scrapes routes, waits for loader overlays, commits visual audit, & Commits DOM snapshots to DB
-            Chat-->>API: Yield Scraped Status
-            API-->>UI: Stream "Successfully scraped..."
-            
-        %% RAG Data Retrieval Routing
-        else Intent = QUERY_CURRENT or QUERY_GUIDELINES
-            Chat->>LLM: Feature Extraction (all-MiniLM-L6-v2)
-            LLM-->>Chat: 384-dim Vector embedding
-            alt Intent = QUERY_CURRENT
-                Chat->>DB: Call match_dashboard_snapshots(vector, path)
-            else Intent = QUERY_GUIDELINES
-                Chat->>DB: Call match_guidelines(vector, path)
-            end
-            DB-->>Chat: Relevant text chunks + source metadata
-            
-            Chat->>LLM: Stream chat_completion with Context (Strict prompt)
-            loop SSE Token Streaming
-                LLM-->>Chat: Token chunks
-                Chat->>Chat: Filter /no_think tag
-                Chat-->>API: Yield stream chunks
-                API-->>UI: Stream SSE Events (data: token)
-                UI->>User: Render markdown formatted answer
-            end
+    User->>UI: Type message ("What is WaiverPro?")
+    UI->>API: GET request with message query
+    API->>Chat: Spawn python chatbot process
+    Note over Chat: Classify Intent
+    alt Message is off-topic
+        Chat-->>API: Yield Refusal Message
+        API-->>UI: Display "I can only assist with WaiverPro..."
+    else Message is a friendly greeting (Hi)
+        Chat->>LLM: Ask LLM to generate greeting
+        LLM-->>Chat: Return welcome message
+        Chat-->>API: Stream welcome message
+        API-->>UI: Display welcome message
+    else Message is a system question (RAG)
+        Chat->>LLM: Convert question to vector (all-MiniLM-L6-v2)
+        LLM-->>Chat: Return 384-dimension vector
+        Chat->>DB: RPC search (match_guidelines or match_snapshots)
+        DB-->>Chat: Return best matching text chunks
+        Chat->>LLM: Request chat completion with matching chunks as context
+        loop Stream SSE Tokens
+            LLM-->>Chat: Send word tokens
+            Chat-->>API: Stream token (data: token)
+            API-->>UI: Append token to chat message
         end
     end
-    Chat->>API: Close exit code
-    API->>UI: Close EventStream connection
+    Chat->>API: Close connection
+    API->>UI: Close EventStream
 ```
 
 ---
