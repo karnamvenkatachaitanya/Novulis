@@ -546,6 +546,13 @@ export async function GET(request) {
     return sseFromEvents(cachedEvents);
   }
 
+  // Fast-path: Check local JS handlers to resolve queries instantly and bypass Hugging Face LLM latency/timeouts
+  const instantEvents = getInstantEvents(message) || getLocalCurrentEvents(message) || getWaiverProSearchEvents(message);
+  if (instantEvents) {
+    setCachedEvents(cacheKey, instantEvents);
+    return sseFromEvents(instantEvents);
+  }
+
   // Build inline Python script that streams chatbot events as JSON lines
   const pyScript = `
 import sys, os, json

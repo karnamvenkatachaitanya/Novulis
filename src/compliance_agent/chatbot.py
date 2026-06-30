@@ -298,35 +298,44 @@ def classify_intent(message: str, llm_client: InferenceClient, model: str = DEFA
         logger.info("Fast intent: %s, Page: %s", fast_result.intent, fast_result.page_path)
         return fast_result
 
-    try:
-        response = llm_client.chat_completion(
-            model=model,
-            messages=[
-                {"role": "system", "content": INTENT_SYSTEM_PROMPT},
-                {"role": "user", "content": f"{message}\n/no_think"},
-            ],
-            max_tokens=100,
-            temperature=0.1,
-        )
-        raw = response.choices[0].message.content
-        if raw is None:
-            raw = ""
-        raw = raw.strip()
-        logger.debug("Intent raw response: %s", raw)
+    # Try model candidates sequentially
+    candidate_models = [model, "Qwen/Qwen2.5-Coder-7B-Instruct", "Qwen/Qwen2.5-7B-Instruct"]
+    seen = set()
+    candidate_models = [m for m in candidate_models if not (m in seen or seen.add(m))]
 
-        # Parse the JSON response
-        # Handle cases where LLM might wrap in markdown code blocks
-        json_match = re.search(r"\{.*\}", raw, re.DOTALL)
-        if json_match:
-            parsed = json.loads(json_match.group())
-            intent = parsed.get("intent", "GENERAL").upper()
-            page_path = parsed.get("page_path")
-            if page_path and page_path not in ALL_PAGE_PATHS:
-                page_path = None
-            return IntentResult(intent=intent, page_path=page_path)
-    except Exception as exc:
-        logger.warning("Intent classification failed, defaulting to GENERAL: %s", exc)
+    last_err = None
+    for candidate in candidate_models:
+        try:
+            logger.info("Attempting intent classification using model: %s", candidate)
+            response = llm_client.chat_completion(
+                model=candidate,
+                messages=[
+                    {"role": "system", "content": INTENT_SYSTEM_PROMPT},
+                    {"role": "user", "content": f"{message}\n/no_think"},
+                ],
+                max_tokens=100,
+                temperature=0.1,
+            )
+            raw = response.choices[0].message.content
+            if raw is None:
+                raw = ""
+            raw = raw.strip()
+            logger.debug("Intent raw response: %s", raw)
 
+            # Parse the JSON response
+            json_match = re.search(r"\{.*\}", raw, re.DOTALL)
+            if json_match:
+                parsed = json.loads(json_match.group())
+                intent = parsed.get("intent", "GENERAL").upper()
+                page_path = parsed.get("page_path")
+                if page_path and page_path not in ALL_PAGE_PATHS:
+                    page_path = None
+                return IntentResult(intent=intent, page_path=page_path)
+        except Exception as exc:
+            logger.warning("Intent classification failed for model %s: %s", candidate, exc)
+            last_err = exc
+
+    logger.warning("All classification models failed. Defaulting to GENERAL.")
     return IntentResult(intent="GENERAL", page_path=None)
 
 
@@ -494,36 +503,63 @@ User Question: {message}
 Answer:
 /no_think"""
 
-    stream = llm_client.chat_completion(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        max_tokens=MAX_NEW_TOKENS,
-        temperature=0.3,
-        stream=True,
-    )
+    # Try model candidates sequentially
+    candidate_models = [model, "Qwen/Qwen2.5-Coder-7B-Instruct", "Qwen/Qwen2.5-7B-Instruct"]
+    seen = set()
+    candidate_models = [m for m in candidate_models if not (m in seen or seen.add(m))]
 
-    buffer = ""
-    stripped = False
-    for chunk in stream:
-        if chunk.choices and chunk.choices[0].delta.content:
-            val = chunk.choices[0].delta.content
-            if not stripped:
-                buffer += val
-                if len(buffer) >= 10:
-                    if buffer.startswith("/no_think"):
-                        buffer = buffer[len("/no_think"):].lstrip()
-                    yield buffer
-                    buffer = ""
-                    stripped = True
-            else:
-                yield val
-    if buffer:
-        if not stripped and buffer.startswith("/no_think"):
-            buffer = buffer[len("/no_think"):].lstrip()
-        yield buffer
+    last_err = None
+    for candidate in candidate_models:
+        try:
+            logger.info("Attempting generation using model: %s", candidate)
+            stream = llm_client.chat_completion(
+                model=candidate,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                max_tokens=MAX_NEW_TOKENS,
+                temperature=0.3,
+                stream=True,
+            )
+
+            # Test connection immediately by pulling the first chunk
+            stream_iter = iter(stream)
+            first_chunk = next(stream_iter)
+
+            # Define a helper to reconstruct the stream
+            def wrapper_generator():
+                yield first_chunk
+                for item in stream_iter:
+                    yield item
+
+            buffer = ""
+            stripped = False
+            for chunk in wrapper_generator():
+                if chunk.choices and chunk.choices[0].delta.content:
+                    val = chunk.choices[0].delta.content
+                    if not stripped:
+                        buffer += val
+                        if len(buffer) >= 10:
+                            if buffer.startswith("/no_think"):
+                                buffer = buffer[len("/no_think"):].lstrip()
+                            yield buffer
+                            buffer = ""
+                            stripped = True
+                    else:
+                        yield val
+            if buffer:
+                if not stripped and buffer.startswith("/no_think"):
+                    buffer = buffer[len("/no_think"):].lstrip()
+                yield buffer
+
+            return # Success! Exit generator.
+        except Exception as exc:
+            logger.warning("Generation failed for model %s: %s", candidate, exc)
+            last_err = exc
+
+    if last_err:
+        raise last_err
 
 
 def generate_answer(
