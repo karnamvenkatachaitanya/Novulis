@@ -423,6 +423,11 @@ DEFAULT_TARGET_PATHS = [
 RETRIEVAL_DIR = Path("retrieved_context")
 REPORT_DIR = Path("reports")
 CAPTURE_DIR = Path("captured_states")
+
+# Ensure all target directories exist
+RETRIEVAL_DIR.mkdir(parents=True, exist_ok=True)
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
+CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
 DEFAULT_EMAIL = "admin@gmail.com"
 
 logger = logging.getLogger("main")

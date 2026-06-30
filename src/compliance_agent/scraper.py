@@ -34,6 +34,7 @@ except ImportError:  # pragma: no cover
 
 AUTH_STATE_PATH = Path("auth_state.json")
 CAPTURE_DIR = Path("captured_states")
+CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
 LOGIN_PATH = "/login"
 DASHBOARD_LANDING_PATH = "/dashboard/my-applications"
 NAVIGATION_TIMEOUT_MS = 30_000

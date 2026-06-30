@@ -33,6 +33,7 @@ except ImportError:
 
 
 CAPTURE_DIR = Path("captured_states")
+CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_TABLE = "dashboard_snapshots"
 MAX_CHUNK_CHARS = 1_500
