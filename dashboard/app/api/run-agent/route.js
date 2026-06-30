@@ -18,46 +18,63 @@ export async function GET(request) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     start(controller) {
+      let closed = false;
+      const pythonCmd = process.platform === "win32" ? "python" : "python3";
+
       // Spawn Python process with unbuffered IO to enable real-time logs streaming
-      const child = spawn("python", args, {
+      const child = spawn(pythonCmd, args, {
         cwd: "../",
         env: { ...process.env, PYTHONUNBUFFERED: "1" },
       });
 
       child.stdout.on("data", (data) => {
+        if (closed) return;
         const lines = data.toString().split("\n");
         lines.forEach((line) => {
           if (line.trim()) {
-            controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ type: "log", data: line })}\n\n`)
-            );
+            try {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: "log", data: line })}\n\n`)
+              );
+            } catch (e) {}
           }
         });
       });
 
       child.stderr.on("data", (data) => {
+        if (closed) return;
         const lines = data.toString().split("\n");
         lines.forEach((line) => {
           if (line.trim()) {
-            controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ type: "log", data: line })}\n\n`)
-            );
+            try {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: "log", data: line })}\n\n`)
+              );
+            } catch (e) {}
           }
         });
       });
 
       child.on("close", (code) => {
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "done", code })}\n\n`)
-        );
-        controller.close();
+        if (closed) return;
+        closed = true;
+        try {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: "done", code })}\n\n`)
+          );
+          controller.close();
+        } catch (e) {}
       });
 
       child.on("error", (err) => {
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "error", error: err.message })}\n\n`)
-        );
-        controller.close();
+        if (closed) return;
+        closed = true;
+        try {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: "error", error: err.message })}\n\n`)
+          );
+          controller.close();
+        } catch (e) {}
       });
     },
   });

@@ -562,8 +562,9 @@ for event in chat_stream(message):
     start(controller) {
       const capturedEvents = [];
       let closed = false;
+      const pythonCmd = process.platform === "win32" ? "python" : "python3";
       const child = spawn(
-        "python",
+        pythonCmd,
         ["-u", "-c", pyScript, JSON.stringify(message)],
         {
           cwd: "../",
