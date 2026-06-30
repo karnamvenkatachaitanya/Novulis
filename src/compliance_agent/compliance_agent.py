@@ -429,21 +429,13 @@ def choose_compliance_model(live_dom_payload: Any, retrieved_guidelines_text: st
         
     logger.info("DOM payload length: %d characters", payload_len)
     
+    # Respect the COMPLIANCE_MODEL from environment if specified
     env_model = os.environ.get("COMPLIANCE_MODEL")
-    
-    # Check if payload size is small (< 12k chars)
-    if payload_len > 0 and payload_len < 12000:
-        low_latency_model = os.environ.get("COMPLIANCE_MODEL_LOW_LATENCY")
-        if low_latency_model:
-            logger.info("Routing audit to low-latency model: %s", low_latency_model)
-            return low_latency_model
-        logger.info("Routing audit to Qwen/Qwen2.5-3B-Instruct (Low-latency path)")
-        return "Qwen/Qwen2.5-3B-Instruct"
-        
     if env_model:
         logger.info("Routing audit to configured COMPLIANCE_MODEL: %s", env_model)
         return env_model
-    logger.info("Routing audit to Qwen/Qwen2.5-7B-Instruct (High-reasoning path)")
+        
+    logger.info("Routing audit to default Qwen/Qwen2.5-7B-Instruct")
     return "Qwen/Qwen2.5-7B-Instruct"
 
 
