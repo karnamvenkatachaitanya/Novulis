@@ -324,3 +324,22 @@ WaiverPro is fully optimized for cloud deployment as a Docker container on Huggi
 3. **Dynamic Port Routing**: Exposes port `7860` as required by HF Spaces environment routing.
 4. **Cross-Platform Execution**: Dashboard spawner routes correctly between `python` (Windows local dev) and `python3` (Docker Linux).
 5. **Secure SSE Stream Management**: Prevents double-closing SSE event stream controllers on child process termination.
+
+---
+
+## ⚠️ Known Limitations
+
+1. **Ephemeral Disk Storage on Hugging Face Spaces**: Since Hugging Face Spaces use temporary Docker container storage, any compliance report PDFs or scraped HTML snapshots generated during a session are deleted when the container restarts (e.g., after pushing new commits or when the container goes to sleep).
+2. **Cloud SMTP Blockages**: Standard SMTP traffic on port 587 and 465 is blocked by Hugging Face’s outbound firewalls to prevent spam. (We implemented Resend HTTPS API support on port 443 as a resilient cloud bypass).
+3. **Sequential Auditing Scope**: The agent scans the configured URL paths sequentially. Highly massive sites with thousands of dynamic links would require parallelized queue scraping.
+4. **LLM Response Consistency**: Although we implemented parsing fallback correction loops, high-temperature LLM settings can occasionally output slightly unstructured JSON arrays. Setting `temperature=0.0` prevents this.
+
+---
+
+## 🔮 What to Improve Next
+
+1. **Visual Diff Highlights on Screenshots**: Crop and highlight coordinates of mismatched DOM components on captured screenshots, inserting visual bounding boxes automatically before compiling the PDF report.
+2. **Real-time Slack / Discord Integration**: Dispatch warning notifications and visual discrepancies directly to team collaboration channels via standard webhook integration.
+3. **Automatic Healing Verification (Auto-Healer)**: Expand the auto-healer agent loop to not only alert but automatically suggest visual styling corrections for CSS regressions.
+4. **Persistent Blob Storage (AWS S3 / Supabase Storage)**: Upload generated PDF reports and full-page screenshots to persistent cloud storage so they are preserved across container rebuilds.
+
