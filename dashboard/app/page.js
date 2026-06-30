@@ -1016,10 +1016,10 @@ export default function Home() {
             borderTop: `1px solid ${theme === 'dark' ? 'rgba(55,65,81,0.5)' : 'rgba(148,163,184,0.35)'}`,
           }}>
             {[
-              "What tickets are open?",
-              "Scrape /dashboard/tickets",
+              "What is WaiverPro?",
+              "What services do you provide?",
               "What should /login display?",
-              "Show compliance status",
+              "What tickets are open?",
             ].map((suggestion) => (
               <button
                 key={suggestion}

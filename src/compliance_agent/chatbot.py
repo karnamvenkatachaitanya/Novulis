@@ -435,6 +435,23 @@ def build_context(chunks: list[dict], source_type: str) -> str:
     return "\n\n---\n\n".join(parts)
 
 
+def inject_overview_if_needed(message: str, context: str) -> str:
+    lower_msg = message.lower()
+    is_overview = any(k in lower_msg for k in [
+        "what is waiverpro", "what is waiver pro", "services", "provide", "about waiverpro", 
+        "what do you do", "features", "what tools", "healthcare waiver", "overview"
+    ])
+    if is_overview:
+        overview = """[Core Overview] Page: / | Section: About WaiverPro
+WaiverPro is a healthcare waiver management platform. It provides tools for managing waiver applications, facilities, action items, user management, announcements, and settings.
+The brand appears at the top of the sidebar with the label "Healthcare Waiver Management".
+Additional support items include FAQs, Tickets, Contact, and a Take a Tour option."""
+        if not context or context == "No relevant data found.":
+            return overview
+        return f"{overview}\n\n---\n\n{context}"
+    return context
+
+
 def generate_answer_stream(
     message: str,
     context: str,
@@ -444,7 +461,12 @@ def generate_answer_stream(
 ) -> Generator[str, None, None]:
     """Generate a streaming answer using retrieved context."""
     if source_type == "General Knowledge":
-        system_prompt = "You are a helpful compliance chatbot assistant for the WaiverPro dashboard. Greet the user, be friendly, and explain that you can help them view compliance guidelines, check current dashboard data, or trigger a fresh scrape."
+        system_prompt = """You are a helpful compliance chatbot assistant for WaiverPro.
+WaiverPro is a healthcare waiver management platform. It provides tools for managing waiver applications, facilities, action items, user management, announcements, and settings.
+The brand appears at the top of the sidebar with the label "Healthcare Waiver Management".
+Additional support items include FAQs, Tickets, Contact, and a Take a Tour option.
+
+Greet the user, be friendly, and answer their question based on the above information about WaiverPro. Also explain that you can help them view detailed compliance guidelines, check current live dashboard data, or trigger a fresh scrape."""
         user_prompt = f"User Question: {message}"
     else:
         system_prompt = f"""You are a helpful assistant for the WaiverPro compliance dashboard.
@@ -615,6 +637,7 @@ def chat(message: str, dry_run: bool = False) -> ChatResponse:
         source = "guidelines"
 
     context = build_context(chunks, source_type)
+    context = inject_overview_if_needed(message, context)
     answer = generate_answer(message, context, source_type, llm_client)
 
     return ChatResponse(
@@ -677,6 +700,7 @@ def chat_stream(message: str) -> Generator[dict, None, None]:
         source = "guidelines"
 
     context = build_context(chunks, source_type)
+    context = inject_overview_if_needed(message, context)
 
     for token in generate_answer_stream(message, context, source_type, llm_client):
         yield {"type": "token", "data": token}
