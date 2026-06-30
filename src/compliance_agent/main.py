@@ -563,7 +563,7 @@ async def audit_target_path(browser: Any, base_url: str, target_path: str, run_i
                 scrape_error_flag="AUTH_REDIRECT_TRIGGERED",
                 model_name=args.compliance_model,
             )
-            report = {
+            report: dict[str, Any] = {
                 "target_path": target_path,
                 "target_url": target_url,
                 "page_url": target_url,
@@ -573,26 +573,29 @@ async def audit_target_path(browser: Any, base_url: str, target_path: str, run_i
                 "findings": findings,
             }
             # Enrich findings with canonical keys (Opportunity Assignment schema)
-            from datetime import datetime
-            retrieved_at_ts = datetime.utcnow().isoformat() + "Z"
-            for f in report.get("findings", []):
-                f["page_url"] = report.get("page_url")
-                sel = str(f.get("element_selector", "")).lower()
-                if "btn" in sel or "button" in sel:
-                    comp_type = "button"
-                elif "nav" in sel or "link" in sel:
-                    comp_type = "navigation_item"
-                else:
-                    comp_type = "text_block"
-                f["component_type"] = comp_type
-                f["component_selector"] = f.get("element_selector")
-                f["actual_text_content"] = f.get("observed_behavior")
-                f["expected_text_content"] = f.get("expected_behavior")
-                f["guideline_reference"] = f.get("guideline_reference") or ""
-                f["discrepancy_flag"] = True
-                f["discrepancy_reason"] = f.get("observed_behavior")
-                f["screenshot_path"] = report.get("screenshot_path")
-                f["retrieved_at"] = retrieved_at_ts
+            from datetime import datetime, timezone
+            retrieved_at_ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            findings_list = report.get("findings", [])
+            if isinstance(findings_list, list):
+                for f in findings_list:
+                    if isinstance(f, dict):
+                        f["page_url"] = report.get("page_url")
+                        sel = str(f.get("element_selector", "")).lower()
+                        if "btn" in sel or "button" in sel:
+                            comp_type = "button"
+                        elif "nav" in sel or "link" in sel:
+                            comp_type = "navigation_item"
+                        else:
+                            comp_type = "text_block"
+                        f["component_type"] = comp_type
+                        f["component_selector"] = f.get("element_selector")
+                        f["actual_text_content"] = f.get("observed_behavior")
+                        f["expected_text_content"] = f.get("expected_behavior")
+                        f["guideline_reference"] = f.get("guideline_reference") or ""
+                        f["discrepancy_flag"] = True
+                        f["discrepancy_reason"] = f.get("observed_behavior")
+                        f["screenshot_path"] = report.get("screenshot_path")
+                        f["retrieved_at"] = retrieved_at_ts
 
             report_path = REPORT_DIR / f"{safe_path_name(target_path)}-{run_id}-compliance.json"
             save_json(report_path, report)
@@ -681,26 +684,29 @@ async def audit_target_path(browser: Any, base_url: str, target_path: str, run_i
         )
 
     # Enrich findings with canonical keys (Opportunity Assignment schema)
-    from datetime import datetime
-    retrieved_at_ts = datetime.utcnow().isoformat() + "Z"
-    for f in report.get("findings", []):
-        f["page_url"] = report.get("page_url")
-        sel = str(f.get("element_selector", "")).lower()
-        if "btn" in sel or "button" in sel:
-            comp_type = "button"
-        elif "nav" in sel or "link" in sel:
-            comp_type = "navigation_item"
-        else:
-            comp_type = "text_block"
-        f["component_type"] = comp_type
-        f["component_selector"] = f.get("element_selector")
-        f["actual_text_content"] = f.get("observed_behavior")
-        f["expected_text_content"] = f.get("expected_behavior")
-        f["guideline_reference"] = f.get("guideline_reference") or ""
-        f["discrepancy_flag"] = True
-        f["discrepancy_reason"] = f.get("observed_behavior")
-        f["screenshot_path"] = report.get("screenshot_path")
-        f["retrieved_at"] = retrieved_at_ts
+    from datetime import datetime, timezone
+    retrieved_at_ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    findings_list = report.get("findings", [])
+    if isinstance(findings_list, list):
+        for f in findings_list:
+            if isinstance(f, dict):
+                f["page_url"] = report.get("page_url")
+                sel = str(f.get("element_selector", "")).lower()
+                if "btn" in sel or "button" in sel:
+                    comp_type = "button"
+                elif "nav" in sel or "link" in sel:
+                    comp_type = "navigation_item"
+                else:
+                    comp_type = "text_block"
+                f["component_type"] = comp_type
+                f["component_selector"] = f.get("element_selector")
+                f["actual_text_content"] = f.get("observed_behavior")
+                f["expected_text_content"] = f.get("expected_behavior")
+                f["guideline_reference"] = f.get("guideline_reference") or ""
+                f["discrepancy_flag"] = True
+                f["discrepancy_reason"] = f.get("observed_behavior")
+                f["screenshot_path"] = report.get("screenshot_path")
+                f["retrieved_at"] = retrieved_at_ts
 
     report_path = REPORT_DIR / f"{safe_path_name(target_path)}-{run_id}-compliance.json"
     save_json(report_path, report)

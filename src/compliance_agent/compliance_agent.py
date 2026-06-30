@@ -194,7 +194,7 @@ def compact(value: Any, max_chars: int) -> str:
     return value[: max_chars - 3].rstrip() + "..."
 
 
-def static_scrape_failure_report(target_path: str, scrape_error_flag: str) -> list[dict[str, str]]:
+def static_scrape_failure_report(target_path: str, scrape_error_flag: str) -> list[dict[str, Any]]:
     reason = "Redirected to login page. Session dropped."
     if scrape_error_flag and scrape_error_flag != "AUTH_REDIRECT_TRIGGERED":
         reason = f"Scrape failed before DOM extraction: {scrape_error_flag}"
@@ -482,7 +482,7 @@ def run_compliance_check(
     max_new_tokens: int = MAX_NEW_TOKENS,
     temperature: float = 0.0,
     repair_attempts: int = 1,
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     """Return a strict JSON-compatible discrepancy list."""
     if scrape_error_flag:
         logger.warning("Bypassing LLM for %s because scrape_error_flag=%s", target_path, scrape_error_flag)
