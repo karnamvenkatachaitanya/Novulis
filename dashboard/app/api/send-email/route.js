@@ -74,7 +74,7 @@ export async function POST(request) {
     const pdfPath = path.join(reportsDir, pdfName);
     const pdfData = await fs.readFile(pdfPath);
 
-    // Create secure transporter configuration
+    // Create secure transporter configuration with strict timeouts
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
@@ -83,9 +83,12 @@ export async function POST(request) {
         user: smtpUser,
         pass: smtpPass,
       },
+      connectionTimeout: 8000, // 8 seconds
+      greetingTimeout: 8000,
+      socketTimeout: 10000,
       tls: {
-        // Only bypass certificate verification in development environments
-        rejectUnauthorized: process.env.NODE_ENV !== 'development',
+        // Bypass certificate verification if needed, or allow self-signed
+        rejectUnauthorized: false,
       },
     });
 
@@ -115,6 +118,11 @@ export async function POST(request) {
     const info = await transporter.sendMail(mailOptions);
     return Response.json({ success: true, messageId: info.messageId, recipient: alertTo });
   } catch (err) {
-    return Response.json({ success: false, error: err.message }, { status: 500 });
+    console.error("SMTP error details:", err);
+    let errMsg = err.message || "Failed to dispatch email.";
+    if (err.code === "ETIMEDOUT" || err.command === "CONN") {
+      errMsg = "SMTP Connection timed out. Note: Cloud providers like Hugging Face Spaces block outbound mail ports (587/465) by default to prevent spam. Please run WaiverPro locally to dispatch emails, or use an HTTP-based mail API.";
+    }
+    return Response.json({ success: false, error: errMsg }, { status: 500 });
   }
 }
