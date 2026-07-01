@@ -762,7 +762,7 @@ export async function GET(request) {
 
   // If the user wants to trigger a scrape, run it directly in JS and stream logs
   const isScrape = /(scrape|crawl|refresh|rescrape|re-scrape|fetch|pull|sync|update)\b/.test(cacheKey) && 
-                   !/(when|last|time|date|how|why|who|what)/.test(cacheKey);
+                   !/\b(when|last|time|date|how|why|who|what)\b/.test(cacheKey);
   if (isScrape) {
     let detectedPath = null;
     let isInvalidPath = false;
