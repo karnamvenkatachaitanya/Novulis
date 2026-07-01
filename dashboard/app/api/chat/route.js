@@ -400,6 +400,51 @@ function summarizeGenericSnapshot(snapshot, pagePath) {
   return `From the latest captured ${pagePath} page, I found this current page content:\n\n${title}\n\n${sample}`;
 }
 
+function summarizeApplications(snapshot) {
+  const text = snapshot.inner_text || "";
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const apps = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const match = line.match(/^([A-Z]{3}-\d{5}-[A-Z0-9]{6})/);
+    if (match) {
+      const id = match[1];
+      const name = lines[i + 1] || "";
+      const line3 = lines[i + 2] || "";
+      const parts = line3.split("\t").map((p) => p.trim()).filter(Boolean);
+      const facility = parts[0] || "";
+      const type = parts[1] || "";
+      const status = lines[i + 3] || "";
+      const date = lines[i + 4] || "";
+
+      apps.push({ id, name, facility, type, status, date });
+    }
+  }
+
+  if (apps.length === 0) {
+    return "I found the latest Applications capture, but could not parse individual application rows.";
+  }
+
+  const counts = {};
+  apps.forEach((app) => {
+    counts[app.status] = (counts[app.status] || 0) + 1;
+  });
+
+  const statusSummary = Object.entries(counts)
+    .map(([status, count]) => `${count} ${status}`)
+    .join(", ");
+
+  const topApps = apps
+    .slice(0, 8)
+    .map((app) => `- ${app.id}: ${app.name} (${app.status}, Created: ${app.date})`)
+    .join("\n");
+
+  const freshness = snapshotFreshness(snapshot);
+  const sourceLine = freshness ? `Source: latest Applications snapshot captured ${freshness}.\n\n` : "";
+  return `${sourceLine}I found ${apps.length} total applications: ${statusSummary}.\n\nRecent applications:\n${topApps}`;
+}
+
 function getLocalCurrentEvents(message) {
   const pagePath = detectCurrentPage(message);
   if (!pagePath) return null;
@@ -413,7 +458,9 @@ function getLocalCurrentEvents(message) {
         ? (summarizeTicket(snapshot, message) || summarizeTickets(snapshot))
         : pagePath === "/dashboard/faqs"
           ? summarizeFaqs(snapshot)
-          : summarizeGenericSnapshot(snapshot, pagePath);
+          : pagePath === "/dashboard/my-applications"
+            ? summarizeApplications(snapshot)
+            : summarizeGenericSnapshot(snapshot, pagePath);
 
     return [
       { type: "intent", intent: "QUERY_CURRENT", page_path: pagePath, latency_mode: "local_snapshot" },

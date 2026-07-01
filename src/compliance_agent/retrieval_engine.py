@@ -115,7 +115,8 @@ def embed_text(text: str, model_name: str = DEFAULT_MODEL) -> list[float]:
     embedding = model.encode(cleaned, normalize_embeddings=True, show_progress_bar=False)
     vector = [float(value) for value in embedding.tolist()]
 
-    expected_dim = model.get_sentence_embedding_dimension()
+    get_dim_fn = getattr(model, "get_embedding_dimension", None) or getattr(model, "get_sentence_embedding_dimension")
+    expected_dim = int(get_dim_fn())
     if len(vector) != expected_dim:
         raise RuntimeError(f"Expected {expected_dim}-dimensional embedding, got {len(vector)} dimensions.")
 
@@ -161,6 +162,7 @@ def retrieve_matching_rules(
     
     # Secure connection retry loop for Supabase RPC calls
     import time as _time
+    response = None
     for attempt in range(1, 4):
         try:
             response = supabase.rpc(rpc_name, params).execute()
@@ -172,23 +174,38 @@ def retrieve_matching_rules(
             logger.warning("Supabase connection attempt %s failed; retrying in %ss: %s", attempt, wait_sec, exc)
             _time.sleep(wait_sec)
 
-    rows = response.data or []
+    if response is None:
+        raise RuntimeError(f"Supabase RPC '{rpc_name}' did not return a response.")
+
+    rows = response.data
+    if not isinstance(rows, list):
+        rows = []
     rules: list[RetrievedRule] = []
     for row in rows:
+        if not isinstance(row, dict):
+            continue
         try:
+            val_similarity: Any = row.get("similarity")
+            val_keyword_rank: Any = row.get("keyword_rank")
+            val_hybrid_score: Any = row.get("hybrid_score")
+            
+            similarity = float(val_similarity) if val_similarity is not None else 0.0
+            keyword_rank = float(val_keyword_rank) if val_keyword_rank is not None else 0.0
+            hybrid_score = float(val_hybrid_score) if val_hybrid_score is not None else 0.0
+
             rules.append(
                 RetrievedRule(
                     id=str(row["id"]),
                     section_name=str(row["section_name"]),
                     url_path=str(row["url_path"]),
                     content=str(row["content"]),
-                    similarity=float(row.get("similarity", 0.0)),
-                    keyword_rank=float(row.get("keyword_rank", 0.0)),
-                    hybrid_score=float(row.get("hybrid_score", 0.0)),
+                    similarity=similarity,
+                    keyword_rank=keyword_rank,
+                    hybrid_score=hybrid_score,
                 )
             )
-        except KeyError as exc:
-            raise RuntimeError(f"RPC response is missing expected field: {exc}") from exc
+        except (KeyError, ValueError, TypeError) as exc:
+            raise RuntimeError(f"RPC response formatting issue or missing field: {exc}") from exc
 
     logger.info("Retrieved %s matching rule chunk(s)", len(rules))
     return rules
