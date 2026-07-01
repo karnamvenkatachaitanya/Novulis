@@ -132,15 +132,15 @@ function getInstantEvents(message) {
 }
 
 const PAGE_KEYWORDS = [
-  ["/dashboard/tickets", ["ticket", "tickets"]],
-  ["/dashboard/facilities", ["facility", "facilities"]],
-  ["/dashboard/my-applications", ["application", "applications", "my applications"]],
-  ["/dashboard/action-items", ["action item", "action items", "task", "tasks"]],
-  ["/dashboard/user-management", ["user", "users", "user management"]],
-  ["/dashboard/announcements", ["announcement", "announcements"]],
-  ["/dashboard/settings", ["setting", "settings"]],
+  ["/dashboard/tickets", ["ticket", "tickets", "tick", "ticks", "tkt", "tkts"]],
+  ["/dashboard/facilities", ["facility", "facilities", "fac", "facs"]],
+  ["/dashboard/my-applications", ["application", "applications", "my applications", "app", "apps", "appication", "appications"]],
+  ["/dashboard/action-items", ["action item", "action items", "task", "tasks", "action", "actions"]],
+  ["/dashboard/user-management", ["user", "users", "user management", "usr", "usrs"]],
+  ["/dashboard/announcements", ["announcement", "announcements", "announce"]],
+  ["/dashboard/settings", ["setting", "settings", "config"]],
   ["/dashboard/faqs", ["faq", "faqs"]],
-  ["/dashboard/contact", ["contact"]],
+  ["/dashboard/contact", ["contact", "support contact"]],
   ["/login", ["login", "sign in"]],
 ];
 
@@ -652,6 +652,84 @@ export async function GET(request) {
   }
 
   const cacheKey = normalizeMessage(message);
+
+  // If the user wants to trigger a scrape, run it directly in JS and stream logs
+  const isScrape = /(scrape|crawl|refresh|rescrape|re-scrape|update data|update my data|fetch latest|pull latest)/.test(cacheKey);
+  if (isScrape) {
+    let detectedPath = null;
+    for (const [pagePath, keywords] of PAGE_KEYWORDS) {
+      if (keywords.some((kw) => cacheKey.includes(kw))) {
+        detectedPath = pagePath;
+        break;
+      }
+    }
+
+    const args = ["main.py", "--no-email", "--no-github-issues", "--verbose"];
+    if (detectedPath) {
+      args.push("--target-path");
+      args.push(detectedPath);
+    }
+
+    return new Response(
+      new ReadableStream({
+        start(controller) {
+          let closed = false;
+          const pythonCmd = process.platform === "win32" ? "python" : "python3";
+          
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "intent", intent: "ACTION_SCRAPE", page_path: detectedPath, latency_mode: "live_scrape" })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "token", data: `Starting compliance scraper sweep for ${detectedPath || "all pages"}...\n\n` })}\n\n`));
+
+          const child = spawn(pythonCmd, args, {
+            cwd: "../",
+            env: { ...process.env, PYTHONUNBUFFERED: "1" },
+          });
+
+          child.stdout.on("data", (data) => {
+            if (closed) return;
+            const lines = data.toString().split("\n");
+            lines.forEach((line) => {
+              if (line.trim()) {
+                // Strip timestamps or logging boilerplate for cleaner chatbot printing
+                const clean = line.replace(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} (INFO|WARNING|ERROR|DEBUG) \w+ - /, "").trim();
+                if (clean) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "token", data: `> _${clean}_\n` })}\n\n`));
+                }
+              }
+            });
+          });
+
+          child.stderr.on("data", (data) => {
+            if (closed) return;
+            const lines = data.toString().split("\n");
+            lines.forEach((line) => {
+              if (line.trim()) {
+                const clean = line.replace(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3} (INFO|WARNING|ERROR|DEBUG) \w+ - /, "").trim();
+                if (clean) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "token", data: `> _${clean}_\n` })}\n\n`));
+                }
+              }
+            });
+          });
+
+          child.on("close", (code) => {
+            if (closed) return;
+            closed = true;
+            const success = code === 0 || code === 2;
+            const statusMsg = success 
+              ? `\n🎉 **Compliance sweep completed successfully!** Page snapshots have been scraped and indexed into Supabase.`
+              : `\n❌ **Scraper failed with exit code ${code}.** Please check the console logs or verify connection credentials.`;
+            
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "token", data: statusMsg })}\n\n`));
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done", source: "action", chunks_used: 1, latency_mode: "live_scrape" })}\n\n`));
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "close", code })}\n\n`));
+            controller.close();
+          });
+        },
+      }),
+      sseHeaders()
+    );
+  }
+
   const cachedEvents = getCachedEvents(cacheKey);
   if (cachedEvents) {
     return sseFromEvents(cachedEvents);
