@@ -870,6 +870,11 @@ def build_email_summary(reports: list[dict[str, Any]], attachments: list[Path], 
             expected = str(finding.get("expected_behavior", ""))
             observed = str(finding.get("observed_behavior", ""))
             severity = str(finding.get("severity", "medium"))
+            
+            # Format screenshot path cleanly to only show the filename in the email body
+            raw_screenshot = report.get("screenshot_path")
+            screenshot_name = Path(raw_screenshot).name if raw_screenshot else "n/a"
+            
             text_lines.extend(
                 [
                     f"Path: {report.get('target_path')}",
@@ -877,7 +882,7 @@ def build_email_summary(reports: list[dict[str, Any]], attachments: list[Path], 
                     f"Expected: {expected}",
                     f"Observed: {observed}",
                     f"Severity: {severity}",
-                    f"Screenshot: {report.get('screenshot_path')}",
+                    f"Screenshot: {screenshot_name}",
                     "",
                 ]
             )
@@ -888,7 +893,7 @@ def build_email_summary(reports: list[dict[str, Any]], attachments: list[Path], 
                 f"<td>{escape(expected)}</td>"
                 f"<td>{escape(observed)}</td>"
                 f"<td><strong>{escape(severity)}</strong></td>"
-                f"<td>{escape(str(report.get('screenshot_path') or 'n/a'))}</td>"
+                f"<td>{escape(screenshot_name)}</td>"
                 "</tr>"
             )
 
@@ -931,16 +936,14 @@ def build_email_summary(reports: list[dict[str, Any]], attachments: list[Path], 
     for path in attachments:
         if not path or path in seen or not path.exists() or not path.is_file():
             continue
-        # Allow PDF, JSON, and PNG attachments to include evidence and metadata
+        # Only attach PDF and PNG files to keep the email clean. Exclude raw JSON files.
         suffix = path.suffix.lower()
-        if suffix not in {".pdf", ".json", ".png"}:
+        if suffix not in {".pdf", ".png"}:
             continue
         seen.add(path)
         data = path.read_bytes()
         if suffix == ".pdf":
             maintype, subtype = "application", "pdf"
-        elif suffix == ".json":
-            maintype, subtype = "application", "json"
         elif suffix == ".png":
             maintype, subtype = "image", "png"
         else:
