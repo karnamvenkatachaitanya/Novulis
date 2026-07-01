@@ -392,6 +392,7 @@ export default function Home() {
 
     let botText = "";
     let source = "";
+    let isChatbotScraping = false;
 
     try {
       const res = await fetch(`/api/chat?message=${encodeURIComponent(msg)}`);
@@ -414,7 +415,11 @@ export default function Home() {
             const event = JSON.parse(jsonStr);
 
             if (event.type === "intent") {
-              // We got the intent classification
+              if (event.intent === "ACTION_SCRAPE") {
+                isChatbotScraping = true;
+                setStatus("running");
+                setLogs(["[SYSTEM] Compliance sweep triggered from chatbot..."]);
+              }
               continue;
             }
 
@@ -436,25 +441,38 @@ export default function Home() {
             }
 
             if (event.type === "token") {
-              botText += event.data;
-              setChatMessages((prev) => {
-                const updated = [...prev];
-                const lastMsg = updated[updated.length - 1];
-                if (lastMsg && lastMsg.role === "bot") {
-                  lastMsg.content = botText;
-                } else {
-                  updated.push({ role: "bot", content: botText, source: "" });
+              const isLogLine = event.data.startsWith("> _");
+              if (isChatbotScraping && isLogLine) {
+                const cleanLog = event.data.replace(/^>\s*_/, "").replace(/_\n?$/, "");
+                if (cleanLog) {
+                  setLogs((prev) => [...prev, cleanLog]);
                 }
-                return updated;
-              });
-              // Auto-scroll chat
-              if (chatMessagesRef.current) {
-                chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+              } else {
+                botText += event.data;
+                setChatMessages((prev) => {
+                  const updated = [...prev];
+                  const lastMsg = updated[updated.length - 1];
+                  if (lastMsg && lastMsg.role === "bot") {
+                    lastMsg.content = botText;
+                  } else {
+                    updated.push({ role: "bot", content: botText, source: "" });
+                  }
+                  return updated;
+                });
+                // Auto-scroll chat
+                if (chatMessagesRef.current) {
+                  chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+                }
               }
             }
 
             if (event.type === "done") {
               source = event.source || "";
+              if (isChatbotScraping) {
+                setStatus("success");
+                setLogs((prev) => [...prev, "[SYSTEM] Compliance sweep completed successfully."]);
+                loadLatestReport();
+              }
               // Update the source badge on the final message
               setChatMessages((prev) => {
                 const updated = [...prev];
@@ -467,6 +485,10 @@ export default function Home() {
             }
 
             if (event.type === "error") {
+              if (isChatbotScraping) {
+                setStatus("error");
+                setLogs((prev) => [...prev, `[SYSTEM] Scraper failed: ${event.error || "Unknown error"}`]);
+              }
               const errorText = event.error || "The chatbot could not finish the request.";
               setChatMessages((prev) => {
                 const updated = [...prev];
