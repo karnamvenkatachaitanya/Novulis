@@ -62,21 +62,36 @@ function setCachedEvents(cacheKey, events) {
 
 function getInstantEvents(message) {
   const normalized = normalizeMessage(message);
-  const greetingPattern = /^(hi|hello|helo|hey|hay|hy|thanks|thank you|bye|goodbye)[!. ]*$/;
+  // Match more greetings, thanks, farewells, and variations like "hello there"
+  const greetingPattern = /^(hi|hello|helo|hey|hay|hy|greetings|good morning|good afternoon|good evening|thanks|thank you|ty)[!. a-z]*$/;
 
   if (greetingPattern.test(normalized)) {
+    const isThanks = /(thanks|thank you|ty)/.test(normalized);
+    const replyText = isThanks
+      ? "You're welcome! Let me know if you need anything else."
+      : "Hi! I can help with WaiverPro dashboard data. Ask me things like `what tickets are open`, `explain ticket 17`, or `show current facilities`.";
     return [
       { type: "intent", intent: "GENERAL", page_path: null, latency_mode: "instant" },
       {
         type: "token",
-        data: "Hi! I can help with WaiverPro dashboard data. Ask me things like `what tickets are open`, `explain ticket 17`, or `show current facilities`.",
+        data: replyText,
       },
       { type: "done", source: "general", chunks_used: 0, latency_mode: "instant" },
       { type: "close", code: 0 },
     ];
   }
 
-  const introPattern = /(introduce|intraduse|who are you|what is your name|your identity)/;
+  const conclusionPattern = /^(nothing|no thanks|no|that is all|bye|goodbye|quit|exit)[!. ]*$/;
+  if (conclusionPattern.test(normalized)) {
+    return [
+      { type: "intent", intent: "GENERAL", page_path: null, latency_mode: "instant" },
+      { type: "token", data: "You're welcome! Feel free to ask if you need help with WaiverPro compliance in the future. Goodbye!" },
+      { type: "done", source: "general", chunks_used: 0, latency_mode: "instant" },
+      { type: "close", code: 0 },
+    ];
+  }
+
+  const introPattern = /(introduce|intraduse|who are you|what is your name|your identity|who made you|who created you|your creator)/;
   if (introPattern.test(normalized)) {
     return [
       { type: "intent", intent: "GENERAL", page_path: null, latency_mode: "instant" },
@@ -191,7 +206,7 @@ function detectCurrentPage(message) {
 
 function extractTicketId(message) {
   const normalized = normalizeMessage(message);
-  const match = normalized.match(/\b(?:tick|ticket)[- ]?0*(\d{1,3})\b/);
+  const match = normalized.match(/\b(?:tick|ticket|tkt)[- #]*0*(\d{1,3})\b/);
   if (!match) return null;
   return `TICK-${match[1].padStart(3, "0")}`;
 }
@@ -749,17 +764,48 @@ export async function GET(request) {
   const isScrape = /(scrape|crawl|refresh|rescrape|re-scrape|update data|update my data|fetch latest|pull latest)/.test(cacheKey);
   if (isScrape) {
     let detectedPath = null;
-    for (const [pagePath, keywords] of PAGE_KEYWORDS) {
-      if (keywords.some((kw) => cacheKey.includes(kw))) {
-        detectedPath = pagePath;
-        break;
+    let isInvalidPath = false;
+
+    // Check if they specified a path explicitly (e.g. /dashboard/facilities or dashboard/facilities)
+    const pathMatch = cacheKey.match(/\/dashboard\/[\w-]+/);
+    if (pathMatch) {
+      const matchedPath = pathMatch[0];
+      if (ALL_PAGE_PATHS.includes(matchedPath)) {
+        detectedPath = matchedPath;
+      } else {
+        isInvalidPath = true;
       }
+    } else {
+      // Otherwise match page keywords
+      for (const [pagePath, keywords] of PAGE_KEYWORDS) {
+        if (keywords.some((kw) => cacheKey.includes(kw))) {
+          detectedPath = pagePath;
+          break;
+        }
+      }
+    }
+
+    if (isInvalidPath) {
+      return new Response(
+        sseFromEvents([
+          { type: "intent", intent: "ACTION_SCRAPE", page_path: null, latency_mode: "local_refusal" },
+          { type: "token", data: "I can only scrape official WaiverPro dashboard routes. Please specify a valid page, such as `/dashboard/facilities`, `/dashboard/tickets`, or `/dashboard/my-applications`." },
+          { type: "done", source: "action", chunks_used: 0, latency_mode: "local_refusal" },
+          { type: "close", code: 1 }
+        ]),
+        sseHeaders()
+      );
     }
 
     const args = ["main.py", "--no-email", "--no-github-issues", "--verbose"];
     if (detectedPath) {
       args.push("--target-path");
       args.push(detectedPath);
+    } else {
+      // Default to scraping the primary dynamic dashboard paths to save time
+      args.push("--target-path"); args.push("/dashboard/my-applications");
+      args.push("--target-path"); args.push("/dashboard/facilities");
+      args.push("--target-path"); args.push("/dashboard/tickets");
     }
 
     return new Response(
@@ -769,7 +815,7 @@ export async function GET(request) {
           const pythonCmd = process.platform === "win32" ? "python" : "python3";
           
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "intent", intent: "ACTION_SCRAPE", page_path: detectedPath, latency_mode: "live_scrape" })}\n\n`));
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "token", data: `Starting compliance scraper sweep for ${detectedPath || "all pages"}...\n\n` })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "token", data: `Starting compliance scraper sweep for ${detectedPath || "all key pages (My Applications, Facilities, Tickets)"}...\n\n` })}\n\n`));
 
           const child = spawn(pythonCmd, args, {
             cwd: "../",
