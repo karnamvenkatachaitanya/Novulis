@@ -36,7 +36,7 @@ except ImportError:
 DEFAULT_LLM_MODEL = os.environ.get("CHATBOT_LLM_MODEL", "Qwen/Qwen2.5-7B-Instruct")
 DEFAULT_EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 MAX_CONTEXT_CHARS = 12_000
-MAX_NEW_TOKENS = int(os.environ.get("CHATBOT_MAX_NEW_TOKENS", "256"))
+MAX_NEW_TOKENS = int(os.environ.get("CHATBOT_MAX_NEW_TOKENS", "1024"))
 
 logger = logging.getLogger("chatbot")
 
