@@ -761,7 +761,8 @@ export async function GET(request) {
   const cacheKey = normalizeMessage(message);
 
   // If the user wants to trigger a scrape, run it directly in JS and stream logs
-  const isScrape = /(scrape|crawl|refresh|rescrape|re-scrape|update data|update my data|fetch latest|pull latest)/.test(cacheKey);
+  const isScrape = /(scrape|crawl|refresh|rescrape|re-scrape|fetch|pull|sync|update)\b/.test(cacheKey) && 
+                   !/(when|last|time|date|how|why|who|what)/.test(cacheKey);
   if (isScrape) {
     let detectedPath = null;
     let isInvalidPath = false;
