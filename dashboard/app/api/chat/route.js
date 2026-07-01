@@ -76,12 +76,26 @@ function getInstantEvents(message) {
     ];
   }
 
-  if (normalized === "help" || normalized === "what can you do") {
+  const introPattern = /(introduce|intraduse|who are you|what is your name|your identity)/;
+  if (introPattern.test(normalized)) {
     return [
       { type: "intent", intent: "GENERAL", page_path: null, latency_mode: "instant" },
       {
         type: "token",
-        data: "I can answer questions about live dashboard data, PDF compliance guidelines, and scraping WaiverPro pages.",
+        data: "I am the WaiverPro Compliance Assistant. I can check visual guidelines, list dashboard statistics, find layout errors, and trigger new web page scans. How can I help you today?",
+      },
+      { type: "done", source: "general", chunks_used: 0, latency_mode: "instant" },
+      { type: "close", code: 0 },
+    ];
+  }
+
+  const capabilityPattern = /(capability|capabilities|what can you do|what can u do|what features|features do you have|how can you help|help)/;
+  if (capabilityPattern.test(normalized)) {
+    return [
+      { type: "intent", intent: "GENERAL", page_path: null, latency_mode: "instant" },
+      {
+        type: "token",
+        data: "Here is what I can do:\n\n1. **Check Live Data**: Ask me about active tickets (`what tickets are open`), applications (`how many applications are there`), or page summaries.\n2. **Look Up Guidelines**: Ask about design rules (`what should the login page show`).\n3. **Scan Pages**: Ask me to scrape routes (`scrape /dashboard/facilities`) to pull fresh details dynamically.\n4. **Check Update Times**: Ask me when pages were last crawled (`when was the last update`).",
       },
       { type: "done", source: "general", chunks_used: 0, latency_mode: "instant" },
       { type: "close", code: 0 },
@@ -159,26 +173,17 @@ function detectCurrentPage(message) {
     return "/dashboard/tickets";
   }
 
-  for (const [pagePath, keywords] of PAGE_KEYWORDS) {
-    if (keywords.includes(normalized)) {
-      return pagePath;
-    }
-  }
-
   const guidelineTerms = /(should|expected|guideline|guidelines|policy|policies|documentation|docs|requirement|requirements|according to|supposed to)/;
   if (guidelineTerms.test(normalized)) return null;
 
-  const currentTerms = /(current|currently|live|latest|right now|now|open|pending|count|status|show|displayed|what|list|all)/;
-  if (!currentTerms.test(normalized)) return null;
-
   for (const [pagePath, keywords] of PAGE_KEYWORDS) {
-    if (keywords.some((keyword) => normalized.includes(keyword))) {
+    if (keywords.some((keyword) => {
+      // Use boundary check to match words correctly (e.g. "app" should not match "happy")
+      const regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+      return regex.test(normalized);
+    })) {
       return pagePath;
     }
-  }
-
-  if (normalized.includes("dashboard")) {
-    return null;
   }
 
   return null;
