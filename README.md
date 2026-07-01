@@ -1,3 +1,12 @@
+---
+title: WaiverPro Compliance Suite
+emoji: 🔍
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # WaiverPro Compliance Automation Suite & RAG Monitoring Dashboard
 
 🔗 **Live App on Hugging Face Spaces**: [https://venkatachaitanya-waiverpro-task.hf.space/](https://venkatachaitanya-waiverpro-task.hf.space/)
