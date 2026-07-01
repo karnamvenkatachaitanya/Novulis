@@ -450,7 +450,72 @@ function summarizeApplications(snapshot) {
   return `${sourceLine}I found ${apps.length} total applications: ${statusSummary}.\n\nRecent applications:\n${topApps}`;
 }
 
-function getUpdateTimeEvents(message) {
+async function getLatestSnapshotTimeFromSupabase(pagePath) {
+  const url = process.env.SUPABASE_URL || "";
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "";
+  if (!url || !key) return null;
+
+  try {
+    const queryUrl = `${url}/rest/v1/dashboard_snapshots?select=scraped_at&page_path=eq.${encodeURIComponent(pagePath)}&order=scraped_at.desc&limit=1`;
+    const res = await fetch(queryUrl, {
+      headers: {
+        "apikey": key,
+        "Authorization": `Bearer ${key}`
+      }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return data[0].scraped_at;
+    }
+  } catch (err) {
+    console.error("Error fetching snapshot time from Supabase:", err);
+  }
+  return null;
+}
+
+async function getAllLatestSnapshotTimesFromSupabase() {
+  const url = process.env.SUPABASE_URL || "";
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "";
+  if (!url || !key) return [];
+
+  try {
+    const queryUrl = `${url}/rest/v1/dashboard_snapshots?select=page_path,scraped_at&order=scraped_at.desc`;
+    const res = await fetch(queryUrl, {
+      headers: {
+        "apikey": key,
+        "Authorization": `Bearer ${key}`
+      }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (data && data.length > 0) {
+      const seen = new Set();
+      const results = [];
+      for (const item of data) {
+        if (!seen.has(item.page_path)) {
+          seen.add(item.page_path);
+          results.push({ pagePath: item.page_path, scrapedAt: item.scraped_at });
+        }
+      }
+      return results;
+    }
+  } catch (err) {
+    console.error("Error fetching all snapshot times from Supabase:", err);
+  }
+  return [];
+}
+
+function formatScrapedAt(scrapedAtStr) {
+  if (!scrapedAtStr) return null;
+  const date = new Date(scrapedAtStr);
+  return date.toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+async function getUpdateTimeEvents(message) {
   const normalized = normalizeMessage(message);
   const isUpdateQuery = /(when|last updated|last update|updated|freshness|scraped|captured|latest data)/.test(normalized);
   if (!isUpdateQuery) return null;
@@ -465,46 +530,73 @@ function getUpdateTimeEvents(message) {
   }
 
   let answer = "";
+  let latencyMode = "supabase_update_time";
+
   if (detectedPath) {
-    const snapshot = latestCaptureForPage(detectedPath);
-    if (snapshot) {
-      const freshness = snapshotFreshness(snapshot);
+    // Try Supabase first
+    const scrapedAt = await getLatestSnapshotTimeFromSupabase(detectedPath);
+    if (scrapedAt) {
+      const freshness = formatScrapedAt(scrapedAt);
       const label = PATH_LABELS[detectedPath] || detectedPath;
-      answer = `The **${label}** page was last updated on **${freshness}**.`;
+      answer = `The **${label}** page was last updated on **${freshness}** (fetched dynamically from Supabase).`;
     } else {
-      answer = `No local snapshot was found for the **${detectedPath}** page. It has not been scraped yet.`;
+      // Fallback to local files
+      const snapshot = latestCaptureForPage(detectedPath);
+      if (snapshot) {
+        const freshness = snapshotFreshness(snapshot);
+        const label = PATH_LABELS[detectedPath] || detectedPath;
+        answer = `The **${label}** page was last updated on **${freshness}** (fetched from local cache).`;
+        latencyMode = "local_update_time";
+      } else {
+        answer = `No snapshot record was found for the **${detectedPath}** page in Supabase or local cache. It has not been scraped yet.`;
+      }
     }
   } else {
-    const files = latestCaptureFiles();
-    if (files.length === 0) {
-      answer = "No page snapshots have been captured yet. Please run a compliance sweep to fetch live data.";
+    // Try Supabase first
+    const times = await getAllLatestSnapshotTimesFromSupabase();
+    if (times.length > 0) {
+      const list = times
+        .map((t) => {
+          const label = PATH_LABELS[t.pagePath] || t.pagePath;
+          const freshness = formatScrapedAt(t.scrapedAt);
+          return `- **${label}**: ${freshness}`;
+        })
+        .join("\n");
+      answer = `Here are the latest update times for each page from Supabase:\n\n${list}`;
     } else {
-      const summaries = [];
-      files.forEach(({ pagePath, filePath }) => {
-        try {
-          const snapshot = readSnapshotFile(pagePath, filePath);
-          const freshness = snapshotFreshness(snapshot);
-          if (freshness) {
-            const label = PATH_LABELS[pagePath] || pagePath;
-            summaries.push({ label, time: freshness, dateObj: new Date(snapshot.captured_at_unix * 1000) });
-          }
-        } catch (_) {}
-      });
-
-      if (summaries.length === 0) {
-        answer = "Could not determine the update times of captured snapshots.";
+      // Fallback to local files
+      const files = latestCaptureFiles();
+      if (files.length === 0) {
+        answer = "No page snapshots have been captured yet. Please run a compliance sweep to fetch live data.";
       } else {
-        summaries.sort((a, b) => b.dateObj - a.dateObj);
-        const list = summaries.map(s => `- **${s.label}**: ${s.time}`).join("\n");
-        answer = `Here are the latest update times for each page:\n\n${list}`;
+        const summaries = [];
+        files.forEach(({ pagePath, filePath }) => {
+          try {
+            const snapshot = readSnapshotFile(pagePath, filePath);
+            const freshness = snapshotFreshness(snapshot);
+            if (freshness) {
+              const label = PATH_LABELS[pagePath] || pagePath;
+              summaries.push({ label, time: freshness, dateObj: new Date(snapshot.captured_at_unix * 1000) });
+            }
+          } catch (_) {}
+        });
+
+        if (summaries.length === 0) {
+          answer = "Could not determine the update times of captured snapshots.";
+        } else {
+          summaries.sort((a, b) => b.dateObj - a.dateObj);
+          const list = summaries.map(s => `- **${s.label}**: ${s.time}`).join("\n");
+          answer = `Here are the latest update times for each page (fetched from local cache):\n\n${list}`;
+          latencyMode = "local_update_time";
+        }
       }
     }
   }
 
   return [
-    { type: "intent", intent: "QUERY_CURRENT", page_path: detectedPath, latency_mode: "local_update_time" },
+    { type: "intent", intent: "QUERY_CURRENT", page_path: detectedPath, latency_mode: latencyMode },
     { type: "token", data: answer },
-    { type: "done", source: "live_data", chunks_used: 1, latency_mode: "local_update_time" },
+    { type: "done", source: "live_data", chunks_used: 1, latency_mode: latencyMode },
     { type: "close", code: 0 },
   ];
 }
@@ -736,7 +828,7 @@ export async function GET(request) {
   }
 
   // Fast-path: Check local JS handlers to resolve queries instantly and bypass Hugging Face LLM latency/timeouts
-  const instantEvents = getInstantEvents(message) || getUpdateTimeEvents(message) || getLocalCurrentEvents(message) || getWaiverProSearchEvents(message);
+  const instantEvents = getInstantEvents(message) || await getUpdateTimeEvents(message) || getLocalCurrentEvents(message) || getWaiverProSearchEvents(message);
   if (instantEvents) {
     setCachedEvents(cacheKey, instantEvents);
     return sseFromEvents(instantEvents);
